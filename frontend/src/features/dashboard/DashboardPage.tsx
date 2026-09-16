@@ -1,29 +1,47 @@
 import { useAuth } from "../auth/AuthContext";
+import { FavoritesList } from "../favorites/FavoritesList";
 
-/** Placeholder — favorites and suggestion blocks land in Phase 2+. This just
- * proves the auth flow actually gets you somewhere protected. */
+/** The three suggestion blocks (Phases 3-5) and the TradingView chart detail
+ * view (Phase 6) still aren't here — this is favorites only, per Phase 2. */
 export function DashboardPage() {
   const { user, logout } = useAuth();
 
   return (
-    <div style={{ padding: "2rem", fontFamily: "system-ui, sans-serif" }}>
-      <h1>Hola, {user?.firstName} 👋</h1>
-      <p>Sesión iniciada como {user?.email}.</p>
-      <p style={{ color: "#666" }}>El dashboard real (favoritos + sugerencias) llega en la Fase 2.</p>
-      <button
-        onClick={logout}
+    <div style={{ padding: "2rem", fontFamily: "system-ui, sans-serif", maxWidth: "960px", margin: "0 auto" }}>
+      <div
         style={{
-          padding: "0.6rem 1.2rem",
-          background: "#ef4444",
-          color: "white",
-          border: "none",
-          borderRadius: "8px",
-          cursor: "pointer",
-          fontWeight: 600,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "2rem",
         }}
       >
-        Cerrar sesión
-      </button>
+        <div>
+          <h1 style={{ margin: 0 }}>Hola, {user?.firstName} 👋</h1>
+          <p style={{ color: "#666", margin: "0.25rem 0 0" }}>{user?.email}</p>
+        </div>
+        <button
+          onClick={logout}
+          style={{
+            padding: "0.6rem 1.2rem",
+            background: "#ef4444",
+            color: "white",
+            border: "none",
+            borderRadius: "8px",
+            cursor: "pointer",
+            fontWeight: 600,
+          }}
+        >
+          Cerrar sesión
+        </button>
+      </div>
+
+      <FavoritesList />
+
+      <p style={{ color: "#999", fontSize: "0.85rem", marginTop: "2rem" }}>
+        Las sugerencias automáticas (más activas, earnings, estrategia intradiaria) y el gráfico de TradingView
+        llegan en las próximas fases.
+      </p>
     </div>
   );
 }

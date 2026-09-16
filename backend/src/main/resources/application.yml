@@ -40,6 +40,13 @@ app:
     secret: ${APP_JWT_SECRET:ZGV2LW9ubHktc2VjcmV0LWRvLW5vdC11c2UtaW4tcHJvZHVjdGlvbi1jaGFuZ2UtbWU=}
     access-token-minutes: 15
     refresh-token-days: 30
+  marketdata:
+    # "mock" (default) fabricates plausible-looking fake quotes — fine for UI
+    # development. Set to "twelvedata" once TWELVE_DATA_API_KEY is set below.
+    provider: ${MARKETDATA_PROVIDER:mock}
+    cache-ttl-seconds: 60
+    twelvedata:
+      api-key: ${TWELVE_DATA_API_KEY:}
 
 ---
 # This whole document only activates once GOOGLE_CLIENT_ID is actually set —
