@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: stock-dashboard-postgres
+    environment:
+      POSTGRES_DB: stock_dashboard
+      POSTGRES_USER: stock_dashboard
+      POSTGRES_PASSWORD: stock_dashboard
+    ports:
+      - "5434:5432"
+    volumes:
+      - stock-dashboard-pgdata:/var/lib/postgresql/data
+
+volumes:
+  stock-dashboard-pgdata:

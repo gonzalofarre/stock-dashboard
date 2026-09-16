@@ -1,0 +1,21 @@
+:root {
+  font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+  /* Light only for now — form controls (inputs, buttons) aren't explicitly
+     themed for dark mode yet, and "light dark" here made the browser apply
+     its native dark styling to them (invisible dark-on-dark text). */
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: white;
+  color: #111;
+}
+
+#root {
+  min-height: 100vh;
+}

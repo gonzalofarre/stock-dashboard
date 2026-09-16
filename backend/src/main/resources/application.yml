@@ -1,0 +1,65 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: stock-dashboard
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5434}/${DB_NAME:stock_dashboard}
+    username: ${DB_USER:stock_dashboard}
+    password: ${DB_PASSWORD:stock_dashboard}
+  jpa:
+    hibernate:
+      ddl-auto: update # fine for this stage of the project; switch to a real migration tool (Flyway/Liquibase) before production
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+  mail:
+    host: ${SMTP_HOST:}
+    port: ${SMTP_PORT:587}
+    username: ${SMTP_USER:}
+    password: ${SMTP_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+app:
+  frontend:
+    url: ${FRONTEND_URL:http://localhost:5183}
+  email:
+    # "console" (default) logs the verification code instead of emailing it —
+    # switch to "smtp" once SMTP_* env vars above are set to a real provider.
+    mode: ${EMAIL_MODE:console}
+  jwt:
+    # DEV-ONLY default so the app runs out of the box locally. This is a real
+    # secret in any shared/production environment — always override via the
+    # APP_JWT_SECRET env var there. (Base64-encoded, >= 256 bits for HS256.)
+    secret: ${APP_JWT_SECRET:ZGV2LW9ubHktc2VjcmV0LWRvLW5vdC11c2UtaW4tcHJvZHVjdGlvbi1jaGFuZ2UtbWU=}
+    access-token-minutes: 15
+    refresh-token-days: 30
+
+---
+# This whole document only activates once GOOGLE_CLIENT_ID is actually set —
+# Spring Boot's OAuth2 client autoconfiguration eagerly validates that a
+# registered provider's client-id is non-empty, so without this guard the
+# app refuses to start at all until Google credentials exist. Keeping it
+# conditional means "Login with Google" simply isn't offered until you add
+# real credentials, instead of blocking local development before then.
+spring:
+  config:
+    activate:
+      on-property: GOOGLE_CLIENT_ID
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope:
+              - openid
+              - profile
+              - email
