@@ -1,5 +1,7 @@
 server:
-  port: 8080
+  # Most PaaS providers (Railway included) assign the port dynamically and
+  # inject it as PORT — 8080 is only the local-dev fallback.
+  port: ${PORT:8080}
 
 spring:
   application:

@@ -1,0 +1,13 @@
+server {
+    listen ${PORT};
+    server_name _;
+
+    root /usr/share/nginx/html;
+    index index.html;
+
+    # React Router uses client-side routing — any path that isn't a real
+    # static file should still serve index.html and let the app route it.
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
