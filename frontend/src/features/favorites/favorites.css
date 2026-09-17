@@ -18,8 +18,13 @@
   margin-bottom: 1.4rem;
 }
 
-.favorites-add-form input {
+.favorites-autocomplete {
+  position: relative;
   flex: 1;
+}
+
+.favorites-add-form input {
+  width: 100%;
   padding: 0.6rem 0.8rem;
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -36,7 +41,63 @@
   box-shadow: 0 0 0 3px rgba(198, 255, 77, 0.15);
 }
 
-.favorites-add-form button {
+.ticker-suggestions {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0.35rem;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.6);
+  z-index: 30;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.ticker-suggestions li + li {
+  margin-top: 2px;
+}
+
+.ticker-suggestions button {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.5rem 0.6rem;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: left;
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+}
+
+.ticker-suggestions button:hover,
+.ticker-suggestions button:focus-visible {
+  background: rgba(198, 255, 77, 0.1);
+}
+
+.ticker-suggestions-ticker {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-weight: 700;
+  color: var(--text);
+  flex-shrink: 0;
+  min-width: 52px;
+}
+
+.ticker-suggestions-name {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.favorites-add-form > button {
   padding: 0.6rem 1.2rem;
   background: var(--brand);
   color: var(--brand-ink);
@@ -47,7 +108,7 @@
   box-shadow: 0 0 16px var(--brand-glow);
 }
 
-.favorites-add-form button:disabled {
+.favorites-add-form > button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   box-shadow: none;

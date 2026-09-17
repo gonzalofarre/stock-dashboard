@@ -9,6 +9,12 @@ export interface StockQuote {
   quoteAvailable: boolean;
 }
 
+export interface TickerName {
+  ticker: string;
+  name: string;
+}
+
 export const stocksApi = {
   quote: (ticker: string) => apiClient.get<StockQuote>(`/api/stocks/${ticker}`),
+  universe: () => apiClient.get<TickerName[]>("/api/stocks/universe"),
 };

@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -61,5 +62,14 @@ class StockServiceTest {
     void rejectsAnInvalidTickerFormat() {
         assertThatThrownBy(() -> stockService.getQuote("not a ticker!"))
                 .isInstanceOf(ApiException.class);
+    }
+
+    @Test
+    void universeIsSortedByTickerAndIncludesKnownNames() {
+        List<TickerNameResponse> universe = stockService.getUniverse();
+
+        assertThat(universe).isNotEmpty();
+        assertThat(universe).extracting(TickerNameResponse::ticker).isSorted();
+        assertThat(universe).contains(new TickerNameResponse("AAPL", "Apple Inc."));
     }
 }

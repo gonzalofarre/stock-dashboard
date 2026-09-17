@@ -7,6 +7,7 @@ import com.stockdashboard.suggestions.StockUniverse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -19,6 +20,16 @@ public class StockService {
     private static final Pattern TICKER_PATTERN = Pattern.compile("^[A-Za-z.\\-]{1,10}$");
 
     private final QuoteCacheService quoteCacheService;
+
+    /** The curated universe with names — powers the ticker autocomplete on
+     * the favorites input. Free-text tickers outside it still work when
+     * added directly; this just can't suggest them. */
+    public List<TickerNameResponse> getUniverse() {
+        return StockUniverse.COMPANY_NAMES.entrySet().stream()
+                .map(e -> new TickerNameResponse(e.getKey(), e.getValue()))
+                .sorted(Comparator.comparing(TickerNameResponse::ticker))
+                .toList();
+    }
 
     public StockQuoteResponse getQuote(String rawTicker) {
         if (rawTicker == null || !TICKER_PATTERN.matcher(rawTicker).matches()) {

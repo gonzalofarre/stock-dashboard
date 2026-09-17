@@ -2,6 +2,7 @@ import { type FormEvent, useEffect, useState } from "react";
 import axios from "axios";
 import { TickerLink } from "../../components/TickerLink";
 import { type Favorite, favoritesApi } from "./favoritesApi";
+import { stocksApi, type TickerName } from "../stocks/stocksApi";
 import "./favorites.css";
 
 /** `refreshSignal`: bump this from a parent whenever a favorite might have
@@ -12,6 +13,8 @@ export function FavoritesList({ refreshSignal }: { refreshSignal?: number } = {}
   const [newTicker, setNewTicker] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
+  const [universe, setUniverse] = useState<TickerName[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   async function load() {
     try {
@@ -27,18 +30,27 @@ export function FavoritesList({ refreshSignal }: { refreshSignal?: number } = {}
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refreshSignal]);
 
-  async function handleAdd(e: FormEvent) {
-    e.preventDefault();
-    if (!newTicker.trim()) return;
+  // Fetched once — the curated universe list is small and static, so there's
+  // no need to hit the backend again on every keystroke.
+  useEffect(() => {
+    stocksApi
+      .universe()
+      .then(({ data }) => setUniverse(data))
+      .catch(() => undefined); // non-critical — worst case, no suggestions
+  }, []);
+
+  async function addTicker(ticker: string) {
+    if (!ticker.trim()) return;
     setError(null);
     setAdding(true);
     try {
-      await favoritesApi.add(newTicker.trim());
+      await favoritesApi.add(ticker.trim());
       setNewTicker("");
+      setShowSuggestions(false);
       await load();
     } catch (err) {
       if (axios.isAxiosError(err) && err.response?.status === 409) {
-        setError(`${newTicker.toUpperCase()} ya está en tus favoritas.`);
+        setError(`${ticker.toUpperCase()} ya está en tus favoritas.`);
       } else if (axios.isAxiosError(err) && err.response?.status === 400) {
         setError("Ese ticker no parece válido.");
       } else {
@@ -47,6 +59,11 @@ export function FavoritesList({ refreshSignal }: { refreshSignal?: number } = {}
     } finally {
       setAdding(false);
     }
+  }
+
+  async function handleAdd(e: FormEvent) {
+    e.preventDefault();
+    await addTicker(newTicker);
   }
 
   async function handleRemove(ticker: string) {
@@ -59,18 +76,43 @@ export function FavoritesList({ refreshSignal }: { refreshSignal?: number } = {}
     }
   }
 
+  const query = newTicker.trim().toUpperCase();
+  const suggestions = query
+    ? universe.filter((t) => t.ticker.startsWith(query) || t.name.toUpperCase().includes(query)).slice(0, 8)
+    : [];
+
   return (
     <div className="favorites-section">
       <h2>Favoritas</h2>
       {error && <div className="favorites-error">{error}</div>}
 
       <form className="favorites-add-form" onSubmit={handleAdd}>
-        <input
-          placeholder="Ticker, ej: AAPL"
-          value={newTicker}
-          onChange={(e) => setNewTicker(e.target.value)}
-          maxLength={10}
-        />
+        <div className="favorites-autocomplete">
+          <input
+            placeholder="Ticker, ej: AAPL"
+            value={newTicker}
+            onChange={(e) => {
+              setNewTicker(e.target.value);
+              setShowSuggestions(true);
+            }}
+            onFocus={() => setShowSuggestions(true)}
+            onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
+            maxLength={10}
+            autoComplete="off"
+          />
+          {showSuggestions && suggestions.length > 0 && (
+            <ul className="ticker-suggestions">
+              {suggestions.map((t) => (
+                <li key={t.ticker}>
+                  <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => addTicker(t.ticker)}>
+                    <span className="ticker-suggestions-ticker">{t.ticker}</span>
+                    <span className="ticker-suggestions-name">{t.name}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
         <button type="submit" disabled={adding}>
           {adding ? "Agregando..." : "Agregar"}
         </button>
