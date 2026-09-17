@@ -47,6 +47,12 @@ app:
     cache-ttl-seconds: 60
     twelvedata:
       api-key: ${TWELVE_DATA_API_KEY:}
+  earnings:
+    # "mock" (default) fabricates a plausible-looking fake earnings calendar —
+    # fine for UI development. Set to "fmp" once FMP_API_KEY is set below.
+    provider: ${EARNINGS_PROVIDER:mock}
+    fmp:
+      api-key: ${FMP_API_KEY:}
 
 ---
 # This whole document only activates once GOOGLE_CLIENT_ID is actually set —
