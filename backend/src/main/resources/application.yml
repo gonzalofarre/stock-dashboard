@@ -53,6 +53,11 @@ app:
     provider: ${EARNINGS_PROVIDER:mock}
     fmp:
       api-key: ${FMP_API_KEY:}
+  strategy:
+    # "mock" (default) fabricates a deterministic fake intraday price series
+    # per ticker — fine for UI development. Set to "twelvedata" once
+    # TWELVE_DATA_API_KEY (above, under marketdata) is set; it's the same key.
+    provider: ${STRATEGY_PROVIDER:mock}
 
 ---
 # This whole document only activates once GOOGLE_CLIENT_ID is actually set —

@@ -3,10 +3,10 @@ import { useAuth } from "../auth/AuthContext";
 import { FavoritesList } from "../favorites/FavoritesList";
 import { MostActiveBlock } from "../suggestions/MostActiveBlock";
 import { EarningsBlock } from "../suggestions/EarningsBlock";
+import { StrategyBlock } from "../suggestions/StrategyBlock";
 import "./dashboard.css";
 
-/** The intraday-strategy suggestion block (Phase 5) and the TradingView
- * chart detail view (Phase 6) still aren't here. */
+/** The TradingView chart detail view (Phase 6) still isn't here. */
 export function DashboardPage() {
   const { user, logout } = useAuth();
   const [favoritesRefreshSignal, setFavoritesRefreshSignal] = useState(0);
@@ -26,10 +26,9 @@ export function DashboardPage() {
       <FavoritesList refreshSignal={favoritesRefreshSignal} />
       <MostActiveBlock onFavoriteAdded={() => setFavoritesRefreshSignal((n) => n + 1)} />
       <EarningsBlock />
+      <StrategyBlock />
 
-      <p className="dashboard-footnote">
-        La sugerencia de estrategia intradiaria y el gráfico de TradingView llegan en las próximas fases.
-      </p>
+      <p className="dashboard-footnote">El gráfico de TradingView al hacer click en una acción llega en la próxima fase.</p>
     </div>
   );
 }
