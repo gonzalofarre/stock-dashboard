@@ -19,6 +19,25 @@
   color: var(--text);
 }
 
+.suggestion-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.suggestion-timeframe {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-faint);
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
 .suggestion-limit-select {
   padding: 0.45rem 0.7rem;
   border: 1px solid var(--border);

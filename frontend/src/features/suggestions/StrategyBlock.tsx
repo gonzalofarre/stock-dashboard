@@ -54,7 +54,11 @@ export function StrategyBlock({ market }: { market: Market }) {
   return (
     <div className="suggestion-block">
       <div className="suggestion-header">
-        <h2>Señal técnica intradía</h2>
+        <div className="suggestion-title-group">
+          <h2>Señal técnica intradía</h2>
+          {/* Must match StrategyService.BAR_INTERVAL_MINUTES on the backend. */}
+          <span className="suggestion-timeframe">Velas de 15 min</span>
+        </div>
         <select
           className="suggestion-limit-select"
           value={limit}
