@@ -1,6 +1,7 @@
 package com.stockdashboard.strategy;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -15,19 +16,27 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 /**
- * NOTE: written against Twelve Data's documented /time_series endpoint, but
- * never exercised against a real API key or live response — same caveat as
- * TwelveDataClient. Also unlike /quote, this endpoint has no confirmed
- * multi-symbol batching in the free-tier docs, so this calls it ONCE PER
- * TICKER: scanning the full ~50-ticker universe means ~50 calls per request,
- * which will blow through a free-tier per-minute rate limit fast. Worth
- * revisiting (a smaller universe, request throttling/caching) once this is
- * actually tested against a real key.
+ * Verified against a real Twelve Data /time_series response — including that
+ * it DOES support the same comma-separated multi-symbol batching as /quote
+ * (undocumented as such, but confirmed working), so this sends ONE request
+ * for however many tickers it's asked for rather than one per ticker.
+ * Twelve Data still charges 1 API credit per symbol either way though —
+ * confirmed too, the hard way (a single 50-symbol request came back
+ * `429 "52 API credits were used, with the current limit being 8"` on the
+ * free tier) — so staying within budget is PriceSeriesCacheService's job
+ * (it never asks this client for more than max-stale-fetch-per-call tickers
+ * at once), not something batching alone fixes.
+ *
+ * Reads the body as a String into a (Jackson 2) JsonNode via our own
+ * ObjectMapper rather than `.retrieve().body(JsonNode.class)` — see
+ * TwelveDataClient's Javadoc for why (Spring Boot 4's RestClient defaults to
+ * Jackson 3 converters, which can't produce this classic JsonNode type).
  */
 @Component
 @Slf4j
@@ -39,6 +48,7 @@ public class TwelveDataPriceSeriesClient implements PriceSeriesClient {
 
     private final RestClient restClient;
     private final String apiKey;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public TwelveDataPriceSeriesClient(@Value("${app.marketdata.twelvedata.api-key}") String apiKey) {
         this.apiKey = apiKey;
@@ -47,46 +57,64 @@ public class TwelveDataPriceSeriesClient implements PriceSeriesClient {
 
     @Override
     public Map<String, List<Bar>> getIntradaySeries(List<String> tickers, int barCount) {
-        Map<String, List<Bar>> result = new HashMap<>();
-        for (String ticker : tickers) {
-            fetchOne(ticker, barCount).ifPresent(bars -> result.put(ticker, bars));
+        if (tickers.isEmpty()) {
+            return Map.of();
         }
-        return result;
-    }
-
-    private Optional<List<Bar>> fetchOne(String ticker, int barCount) {
+        String symbolParam = String.join(",", tickers);
         JsonNode response;
         try {
-            response = restClient.get()
+            String body = restClient.get()
                     .uri(uriBuilder -> uriBuilder
                             .path("/time_series")
-                            .queryParam("symbol", ticker)
+                            .queryParam("symbol", symbolParam)
                             .queryParam("interval", INTERVAL)
                             .queryParam("outputsize", barCount)
                             .queryParam("apikey", apiKey)
                             .build())
                     .retrieve()
-                    .body(JsonNode.class);
+                    .body(String.class);
+            response = body != null ? objectMapper.readTree(body) : null;
         } catch (Exception e) {
-            log.warn("Twelve Data time_series request failed for {}: {}", ticker, e.getMessage());
-            return Optional.empty();
+            log.warn("Twelve Data time_series request failed for {}: {}", tickers, e.getMessage());
+            return Map.of();
         }
-        if (response == null || !response.path("values").isArray()) {
+        if (response == null) {
+            return Map.of();
+        }
+
+        // A single-symbol request returns one flat {meta, values, status} object;
+        // a multi-symbol request returns an object keyed by symbol, each with its
+        // own {meta, values, status} — same asymmetry as /quote (see TwelveDataClient).
+        Map<String, List<Bar>> result = new HashMap<>();
+        if (response.has("meta")) {
+            parseValues(tickers.get(0), response).ifPresent(bars -> result.put(tickers.get(0), bars));
+        } else {
+            Iterator<String> fieldNames = response.fieldNames();
+            while (fieldNames.hasNext()) {
+                String ticker = fieldNames.next();
+                parseValues(ticker, response.get(ticker)).ifPresent(bars -> result.put(ticker, bars));
+            }
+        }
+        return result;
+    }
+
+    private Optional<List<Bar>> parseValues(String ticker, JsonNode node) {
+        if (node == null || !node.path("values").isArray()) {
             return Optional.empty();
         }
         try {
             List<Bar> bars = new ArrayList<>();
-            for (JsonNode node : response.get("values")) {
-                Instant time = LocalDateTime.parse(node.get("datetime").asText(), DATETIME_FORMAT)
+            for (JsonNode valueNode : node.get("values")) {
+                Instant time = LocalDateTime.parse(valueNode.get("datetime").asText(), DATETIME_FORMAT)
                         .atZone(ZoneId.systemDefault()).toInstant();
-                BigDecimal close = new BigDecimal(node.get("close").asText());
+                BigDecimal close = new BigDecimal(valueNode.get("close").asText());
                 bars.add(new Bar(time, close));
             }
             // Twelve Data returns most-recent-first; StrategyService needs oldest-first.
             Collections.reverse(bars);
             return Optional.of(bars);
         } catch (Exception e) {
-            log.warn("Could not parse Twelve Data time_series response for {}: {}", ticker, response, e);
+            log.warn("Could not parse Twelve Data time_series response for {}: {}", ticker, node, e);
             return Optional.empty();
         }
     }

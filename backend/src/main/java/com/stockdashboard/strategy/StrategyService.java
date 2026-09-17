@@ -29,7 +29,9 @@ public class StrategyService {
     private static final int MIN_RESULTS = 5;
     private static final int MAX_RESULTS = 10;
 
-    private static final int BARS_REQUESTED = 50;
+    // Public: MarketDataCacheWarmer needs the exact same bar count so its
+    // warm-up writes into the same cache entries this service later reads.
+    public static final int BARS_REQUESTED = 50;
     private static final int LOOKBACK_BARS = 8;
     private static final int BAR_INTERVAL_MINUTES = 15;
 
@@ -39,12 +41,12 @@ public class StrategyService {
     private static final int MACD_SLOW = 26;
     private static final int MACD_SIGNAL = 9;
 
-    private final PriceSeriesClient priceSeriesClient;
+    private final PriceSeriesCacheService priceSeriesCacheService;
 
     public List<StrategySignalResponse> getSignals(int requestedLimit) {
         int limit = Math.clamp(requestedLimit, MIN_RESULTS, MAX_RESULTS);
 
-        Map<String, List<Bar>> series = priceSeriesClient.getIntradaySeries(StockUniverse.LIQUID_US_STOCKS, BARS_REQUESTED);
+        Map<String, List<Bar>> series = priceSeriesCacheService.getIntradaySeries(StockUniverse.LIQUID_US_STOCKS, BARS_REQUESTED);
 
         List<StrategySignalResponse> signals = new ArrayList<>();
         for (var entry : series.entrySet()) {

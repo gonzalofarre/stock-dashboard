@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
 class StrategyServiceTest {
 
     @Mock
-    private PriceSeriesClient priceSeriesClient;
+    private PriceSeriesCacheService priceSeriesClient;
 
     private StrategyService strategyService;
 

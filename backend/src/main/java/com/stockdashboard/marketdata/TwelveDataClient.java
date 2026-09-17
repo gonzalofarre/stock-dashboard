@@ -1,6 +1,7 @@
 package com.stockdashboard.marketdata;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -15,12 +16,16 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * NOTE: written against Twelve Data's documented /quote endpoint, but never
- * exercised against a real API key or live response — there was none
- * available while building this. Verify against a real key before trusting
- * it; the single-vs-multiple-symbol response shape difference handled below
- * (see getQuotes) is the detail most likely to need adjustment if their API
- * has since changed.
+ * Verified against a real Twelve Data /quote response (single and
+ * multi-symbol shapes both confirmed, including "name" and "volume" fields).
+ *
+ * Parses the body as a String and reads it into a (Jackson 2) JsonNode with
+ * our own ObjectMapper, rather than `.retrieve().body(JsonNode.class)` —
+ * Spring Boot 4's RestClient auto-configures Jackson 3 (`tools.jackson`)
+ * converters by default, which can't produce this classic
+ * `com.fasterxml.jackson.databind.JsonNode` (the type jjwt-jackson and the
+ * rest of this codebase use); asking for it that way failed with "Type
+ * definition error" against the real API. Confirmed the hard way.
  */
 @Component
 @Slf4j
@@ -29,6 +34,7 @@ public class TwelveDataClient implements MarketDataClient {
 
     private final RestClient restClient;
     private final String apiKey;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public TwelveDataClient(@Value("${app.marketdata.twelvedata.api-key}") String apiKey) {
         this.apiKey = apiKey;
@@ -43,14 +49,15 @@ public class TwelveDataClient implements MarketDataClient {
         String symbolParam = String.join(",", tickers);
         JsonNode response;
         try {
-            response = restClient.get()
+            String body = restClient.get()
                     .uri(uriBuilder -> uriBuilder
                             .path("/quote")
                             .queryParam("symbol", symbolParam)
                             .queryParam("apikey", apiKey)
                             .build())
                     .retrieve()
-                    .body(JsonNode.class);
+                    .body(String.class);
+            response = body != null ? objectMapper.readTree(body) : null;
         } catch (Exception e) {
             log.warn("Twelve Data request failed for {}: {}", tickers, e.getMessage());
             return Map.of();

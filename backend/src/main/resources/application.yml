@@ -44,7 +44,18 @@ app:
     # "mock" (default) fabricates plausible-looking fake quotes — fine for UI
     # development. Set to "twelvedata" once TWELVE_DATA_API_KEY is set below.
     provider: ${MARKETDATA_PROVIDER:mock}
-    cache-ttl-seconds: 60
+    # 30 min default: generous for a dashboard that isn't a trading terminal,
+    # and long enough that the ~50-ticker universe stays fully warm between
+    # MarketDataCacheWarmer sweeps once max-stale-fetch-per-call is capped
+    # down for a real, rate-limited provider (see below).
+    cache-ttl-seconds: ${MARKETDATA_CACHE_TTL_SECONDS:1800}
+    # How many stale tickers ONE call is allowed to fetch from the provider.
+    # 100 (> our whole universe) is a no-op cap, fine for the mock provider.
+    # Twelve Data's free tier caps at 8 API credits/minute *shared across
+    # endpoints* (confirmed against a real key) — set this to 8 alongside
+    # TWELVE_DATA_API_KEY so one request can never blow the whole minute's
+    # budget; MarketDataCacheWarmer's scheduled sweeps fill in the rest.
+    max-stale-fetch-per-call: ${MARKETDATA_MAX_STALE_FETCH:100}
     twelvedata:
       api-key: ${TWELVE_DATA_API_KEY:}
   earnings:
@@ -58,6 +69,10 @@ app:
     # per ticker — fine for UI development. Set to "twelvedata" once
     # TWELVE_DATA_API_KEY (above, under marketdata) is set; it's the same key.
     provider: ${STRATEGY_PROVIDER:mock}
+    # Same reasoning as marketdata.cache-ttl-seconds / max-stale-fetch-per-call
+    # above, just for the intraday bar series instead of quotes.
+    cache-ttl-seconds: ${STRATEGY_CACHE_TTL_SECONDS:1800}
+    max-stale-fetch-per-call: ${STRATEGY_MAX_STALE_FETCH:100}
 
 ---
 # This whole document only activates once GOOGLE_CLIENT_ID is actually set —

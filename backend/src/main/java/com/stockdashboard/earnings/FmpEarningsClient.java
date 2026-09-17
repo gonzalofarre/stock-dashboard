@@ -1,6 +1,7 @@
 package com.stockdashboard.earnings;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -15,13 +16,21 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * NOTE: written against Financial Modeling Prep's documented
- * /api/v3/earning_calendar endpoint, but never exercised against a real API
- * key or live response — there was none available while building this.
- * Verify against a real key before trusting it. Unlike Twelve Data's /quote,
- * this endpoint is market-wide (not filterable by symbol server-side), so
- * this client fetches the whole date range once and filters to our universe
- * client-side.
+ * Uses FMP's current /stable/earnings-calendar endpoint. (An earlier version
+ * of this class targeted the documented-but-actually-retired
+ * /api/v3/earning_calendar — confirmed dead against a real key: FMP shut
+ * down every /api/v3 endpoint on 2025-08-31 in favor of /stable. The
+ * /stable response also doesn't carry a before/after-market "time" field at
+ * all, unlike what the old v3 docs described, so every event here comes back
+ * as ReportTime.UNSPECIFIED — see parseTime.)
+ * Unlike Twelve Data's /quote, this endpoint is market-wide (not filterable
+ * by symbol server-side), so this client fetches the whole date range once
+ * and filters to our universe client-side.
+ *
+ * Reads the body as a String into a (Jackson 2) JsonNode via our own
+ * ObjectMapper rather than `.retrieve().body(JsonNode.class)` — see
+ * TwelveDataClient's Javadoc for why (Spring Boot 4's RestClient defaults to
+ * Jackson 3 converters, which can't produce this classic JsonNode type).
  */
 @Component
 @Slf4j
@@ -30,6 +39,7 @@ public class FmpEarningsClient implements EarningsClient {
 
     private final RestClient restClient;
     private final String apiKey;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public FmpEarningsClient(@Value("${app.earnings.fmp.api-key}") String apiKey) {
         this.apiKey = apiKey;
@@ -41,15 +51,16 @@ public class FmpEarningsClient implements EarningsClient {
         Set<String> wanted = Set.copyOf(tickers);
         JsonNode response;
         try {
-            response = restClient.get()
+            String body = restClient.get()
                     .uri(uriBuilder -> uriBuilder
-                            .path("/api/v3/earning_calendar")
+                            .path("/stable/earnings-calendar")
                             .queryParam("from", from.format(DateTimeFormatter.ISO_LOCAL_DATE))
                             .queryParam("to", to.format(DateTimeFormatter.ISO_LOCAL_DATE))
                             .queryParam("apikey", apiKey)
                             .build())
                     .retrieve()
-                    .body(JsonNode.class);
+                    .body(String.class);
+            response = body != null ? objectMapper.readTree(body) : null;
         } catch (Exception e) {
             log.warn("FMP earnings calendar request failed for [{}, {}]: {}", from, to, e.getMessage());
             return List.of();
@@ -74,7 +85,7 @@ public class FmpEarningsClient implements EarningsClient {
             LocalDate reportDate = LocalDate.parse(node.get("date").asText());
             ReportTime time = parseTime(node.path("time").asText(""));
             BigDecimal epsEstimated = node.hasNonNull("epsEstimated") ? new BigDecimal(node.get("epsEstimated").asText()) : null;
-            BigDecimal epsActual = node.hasNonNull("eps") ? new BigDecimal(node.get("eps").asText()) : null;
+            BigDecimal epsActual = node.hasNonNull("epsActual") ? new BigDecimal(node.get("epsActual").asText()) : null;
             return java.util.Optional.of(new EarningsEvent(ticker, reportDate, time, epsEstimated, epsActual));
         } catch (Exception e) {
             log.warn("Could not parse FMP earnings node for {}: {}", ticker, node, e);
