@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { strategyApi, type StrategySignal } from "./strategyApi";
 import "./suggestions.css";
 
@@ -79,7 +80,9 @@ export function StrategyBlock() {
               <span className={`signal-icon ${s.direction === "BULLISH" ? "bullish" : "bearish"}`}>
                 <DirectionIcon direction={s.direction} />
               </span>
-              <span className="signal-ticker">{s.ticker}</span>
+              <Link to={`/stock/${s.ticker}`} className="signal-ticker">
+                {s.ticker}
+              </Link>
               <span className="signal-label">{TYPE_LABEL[s.type]}</span>
               <span className={`signal-badge ${s.direction === "BULLISH" ? "bullish" : "bearish"}`}>
                 {s.direction === "BULLISH" ? "Alcista" : "Bajista"}

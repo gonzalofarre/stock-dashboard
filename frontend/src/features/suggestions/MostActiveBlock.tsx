@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import { type MostActiveStock, suggestionsApi } from "./suggestionsApi";
 import { favoritesApi } from "../favorites/favoritesApi";
@@ -12,8 +13,7 @@ function formatVolume(volume: number): string {
 
 /** Suggestion block 1: today's most active (highest-volume) stocks from a
  * curated liquid-stock universe — see StockUniverse.java for why it's not a
- * full market scan. Clicking a ticker to open a TradingView chart is Phase 6,
- * not built yet — tickers here are just labels for now, not links. */
+ * full market scan. Clicking a ticker opens its detail view (Phase 6). */
 export function MostActiveBlock({ onFavoriteAdded }: { onFavoriteAdded?: () => void } = {}) {
   const [limit, setLimit] = useState(10);
   const [stocks, setStocks] = useState<MostActiveStock[] | null>(null);
@@ -88,7 +88,11 @@ export function MostActiveBlock({ onFavoriteAdded }: { onFavoriteAdded?: () => v
           <tbody>
             {stocks.map((stock) => (
               <tr key={stock.ticker}>
-                <td className="suggestion-ticker">{stock.ticker}</td>
+                <td>
+                  <Link to={`/stock/${stock.ticker}`} className="suggestion-ticker">
+                    {stock.ticker}
+                  </Link>
+                </td>
                 <td className="numeric">${stock.price.toFixed(2)}</td>
                 <td className={`numeric suggestion-change ${stock.changePercent >= 0 ? "positive" : "negative"}`}>
                   {stock.changePercent >= 0 ? "+" : ""}

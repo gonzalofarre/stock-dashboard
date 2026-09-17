@@ -80,6 +80,12 @@
 .suggestion-ticker {
   font-family: "JetBrains Mono", ui-monospace, monospace;
   font-weight: 700;
+  color: var(--text);
+  display: inline-block;
+}
+
+.suggestion-ticker:hover {
+  color: var(--brand);
 }
 
 .suggestion-change {

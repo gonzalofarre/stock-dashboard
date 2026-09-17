@@ -5,6 +5,7 @@ import { RegisterPage } from "./features/auth/RegisterPage";
 import { VerifyEmailPage } from "./features/auth/VerifyEmailPage";
 import { OAuthCallbackPage } from "./features/auth/OAuthCallbackPage";
 import { DashboardPage } from "./features/dashboard/DashboardPage";
+import { StockDetailPage } from "./features/stocks/StockDetailPage";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
 function App() {
@@ -21,6 +22,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <DashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/stock/:ticker"
+            element={
+              <ProtectedRoute>
+                <StockDetailPage />
               </ProtectedRoute>
             }
           />

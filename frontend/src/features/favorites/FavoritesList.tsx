@@ -1,4 +1,5 @@
 import { type FormEvent, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import { type Favorite, favoritesApi } from "./favoritesApi";
 import "./favorites.css";
@@ -83,7 +84,9 @@ export function FavoritesList({ refreshSignal }: { refreshSignal?: number } = {}
         <ul className="favorites-list">
           {favorites.map((favorite) => (
             <li key={favorite.ticker} className="favorite-row">
-              <span className="favorite-ticker">{favorite.ticker}</span>
+              <Link to={`/stock/${favorite.ticker}`} className="favorite-ticker">
+                {favorite.ticker}
+              </Link>
               {favorite.quoteAvailable ? (
                 <>
                   <span className="favorite-price">${favorite.price?.toFixed(2)}</span>
