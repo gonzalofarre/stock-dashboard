@@ -70,7 +70,7 @@ export function VerifyEmailPage() {
           </button>
         </form>
         <div className="auth-footer">
-          ¿No te llegó? <button type="button" onClick={handleResend} style={{ background: "none", border: "none", color: "#2563eb", fontWeight: 600, cursor: "pointer", padding: 0 }}>Reenviar código</button>
+          ¿No te llegó? <button type="button" className="auth-link-button" onClick={handleResend}>Reenviar código</button>
         </div>
       </div>
     </div>

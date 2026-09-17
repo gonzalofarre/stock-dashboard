@@ -1,31 +1,39 @@
 .suggestion-block {
-  max-width: 760px;
-  margin-top: 2.5rem;
+  max-width: 780px;
+  margin-top: 2.75rem;
 }
 
 .suggestion-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem;
 }
 
 .suggestion-header h2 {
+  font-family: "Unbounded", system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
   margin: 0;
+  color: var(--text);
 }
 
 .suggestion-limit-select {
-  padding: 0.4rem 0.6rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background: white;
-  color: #111;
-  font-size: 0.85rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-alt);
+  color: var(--text);
+  font-size: 0.8rem;
+  font-weight: 600;
 }
 
 .suggestion-error {
-  background: #fee2e2;
-  color: #991b1b;
+  background: var(--down-soft);
+  color: var(--down);
+  border: 1px solid rgba(255, 92, 92, 0.3);
   padding: 0.5rem 0.75rem;
   border-radius: 8px;
   font-size: 0.85rem;
@@ -35,20 +43,22 @@
 .suggestion-table {
   width: 100%;
   border-collapse: collapse;
-  border: 1px solid #e5e5e5;
-  border-radius: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
   overflow: hidden;
 }
 
 .suggestion-table th {
   text-align: left;
-  font-size: 0.75rem;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: #666;
-  background: #fafafa;
-  padding: 0.6rem 0.75rem;
-  border-bottom: 1px solid #eee;
+  letter-spacing: 0.06em;
+  color: var(--text-faint);
+  background: var(--surface-alt);
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid var(--border);
 }
 
 .suggestion-table th.numeric,
@@ -58,9 +68,9 @@
 }
 
 .suggestion-table td {
-  padding: 0.6rem 0.75rem;
-  border-bottom: 1px solid #f0f0f0;
-  background: white;
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid var(--border-soft);
+  color: var(--text);
 }
 
 .suggestion-table tr:last-child td {
@@ -68,36 +78,132 @@
 }
 
 .suggestion-ticker {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
   font-weight: 700;
 }
 
+.suggestion-change {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+}
+
 .suggestion-change.positive {
-  color: #16a34a;
-  font-weight: 600;
+  color: var(--up);
+  font-weight: 700;
 }
 
 .suggestion-change.negative {
-  color: #dc2626;
-  font-weight: 600;
+  color: var(--down);
+  font-weight: 700;
 }
 
 .suggestion-fav-button {
   background: none;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  padding: 0.2rem 0.55rem;
+  border: 1px solid var(--brand);
+  border-radius: 999px;
+  padding: 0.25rem 0.7rem;
   cursor: pointer;
-  font-size: 0.8rem;
-  color: #444;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--brand);
 }
 
 .suggestion-fav-button:hover {
-  border-color: #2563eb;
-  color: #2563eb;
+  background: rgba(198, 255, 77, 0.08);
 }
 
 .suggestion-fav-button.already {
-  color: #999;
+  color: var(--text-faint);
   cursor: default;
-  border-color: #eee;
+  border-color: var(--border);
+  background: none;
+}
+
+.earnings-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+@media (max-width: 640px) {
+  .earnings-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.earnings-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem 1.4rem;
+}
+
+.earnings-panel h3 {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin: 0 0 1rem;
+}
+
+.earnings-loading,
+.earnings-empty {
+  color: var(--text-faint);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.earnings-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.earnings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.earnings-ticker {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.earnings-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.earnings-badge.warn {
+  color: var(--warn);
+  background: var(--warn-soft);
+}
+
+.earnings-surprise {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.earnings-surprise.positive {
+  color: var(--up);
+}
+
+.earnings-surprise.negative {
+  color: var(--down);
+}
+
+.earnings-when {
+  color: var(--text-faint);
+  font-size: 0.75rem;
+  white-space: nowrap;
 }
