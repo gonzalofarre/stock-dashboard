@@ -81,7 +81,7 @@ class FavoriteServiceTest {
         Favorite favorite = Favorite.builder().ticker("AAPL").addedAt(Instant.now()).build();
         when(favoriteRepository.findByUserIdOrderByAddedAtDesc(1L)).thenReturn(List.of(favorite));
         when(quoteCacheService.getQuotes(List.of("AAPL"))).thenReturn(
-                Map.of("AAPL", new Quote("AAPL", BigDecimal.valueOf(190.5), BigDecimal.valueOf(1.2), Instant.now()))
+                Map.of("AAPL", new Quote("AAPL", BigDecimal.valueOf(190.5), BigDecimal.valueOf(1.2), 1_000_000L, Instant.now()))
         );
 
         List<FavoriteResponse> result = favoriteService.listFavorites(1L);

@@ -3,7 +3,10 @@ import axios from "axios";
 import { type Favorite, favoritesApi } from "./favoritesApi";
 import "./favorites.css";
 
-export function FavoritesList() {
+/** `refreshSignal`: bump this from a parent whenever a favorite might have
+ * changed somewhere else (e.g. the "+ Favorita" button in a suggestion
+ * block) so this list re-fetches instead of going stale until next reload. */
+export function FavoritesList({ refreshSignal }: { refreshSignal?: number } = {}) {
   const [favorites, setFavorites] = useState<Favorite[] | null>(null);
   const [newTicker, setNewTicker] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -20,7 +23,8 @@ export function FavoritesList() {
 
   useEffect(() => {
     load();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [refreshSignal]);
 
   async function handleAdd(e: FormEvent) {
     e.preventDefault();

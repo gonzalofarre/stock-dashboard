@@ -1,10 +1,13 @@
+import { useState } from "react";
 import { useAuth } from "../auth/AuthContext";
 import { FavoritesList } from "../favorites/FavoritesList";
+import { MostActiveBlock } from "../suggestions/MostActiveBlock";
 
-/** The three suggestion blocks (Phases 3-5) and the TradingView chart detail
- * view (Phase 6) still aren't here — this is favorites only, per Phase 2. */
+/** Earnings and intraday-strategy suggestion blocks (Phases 4-5) and the
+ * TradingView chart detail view (Phase 6) still aren't here. */
 export function DashboardPage() {
   const { user, logout } = useAuth();
+  const [favoritesRefreshSignal, setFavoritesRefreshSignal] = useState(0);
 
   return (
     <div style={{ padding: "2rem", fontFamily: "system-ui, sans-serif", maxWidth: "960px", margin: "0 auto" }}>
@@ -36,11 +39,12 @@ export function DashboardPage() {
         </button>
       </div>
 
-      <FavoritesList />
+      <FavoritesList refreshSignal={favoritesRefreshSignal} />
+      <MostActiveBlock onFavoriteAdded={() => setFavoritesRefreshSignal((n) => n + 1)} />
 
       <p style={{ color: "#999", fontSize: "0.85rem", marginTop: "2rem" }}>
-        Las sugerencias automáticas (más activas, earnings, estrategia intradiaria) y el gráfico de TradingView
-        llegan en las próximas fases.
+        Las sugerencias de earnings y estrategia intradiaria, y el gráfico de TradingView, llegan en las próximas
+        fases.
       </p>
     </div>
   );

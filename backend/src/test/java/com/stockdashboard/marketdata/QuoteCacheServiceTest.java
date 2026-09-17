@@ -23,7 +23,7 @@ class QuoteCacheServiceTest {
     void aSecondCallWithinTheTtlDoesNotHitTheUnderlyingClientAgain() {
         QuoteCacheService cacheService = new QuoteCacheService(marketDataClient, 60);
         when(marketDataClient.getQuotes(List.of("AAPL"))).thenReturn(
-                Map.of("AAPL", new Quote("AAPL", BigDecimal.TEN, BigDecimal.ONE, Instant.now()))
+                Map.of("AAPL", new Quote("AAPL", BigDecimal.TEN, BigDecimal.ONE, 1_000_000L, Instant.now()))
         );
 
         cacheService.getQuotes(List.of("AAPL"));
@@ -36,7 +36,7 @@ class QuoteCacheServiceTest {
     void aCallAfterTheTtlExpiresHitsTheUnderlyingClientAgain() throws InterruptedException {
         QuoteCacheService cacheService = new QuoteCacheService(marketDataClient, 0); // effectively no caching
         when(marketDataClient.getQuotes(List.of("AAPL"))).thenReturn(
-                Map.of("AAPL", new Quote("AAPL", BigDecimal.TEN, BigDecimal.ONE, Instant.now()))
+                Map.of("AAPL", new Quote("AAPL", BigDecimal.TEN, BigDecimal.ONE, 1_000_000L, Instant.now()))
         );
 
         cacheService.getQuotes(List.of("AAPL"));
@@ -50,12 +50,12 @@ class QuoteCacheServiceTest {
     void onlyFetchesTheTickersThatAreActuallyStale() {
         QuoteCacheService cacheService = new QuoteCacheService(marketDataClient, 60);
         when(marketDataClient.getQuotes(List.of("AAPL"))).thenReturn(
-                Map.of("AAPL", new Quote("AAPL", BigDecimal.TEN, BigDecimal.ONE, Instant.now()))
+                Map.of("AAPL", new Quote("AAPL", BigDecimal.TEN, BigDecimal.ONE, 1_000_000L, Instant.now()))
         );
         cacheService.getQuotes(List.of("AAPL")); // warms AAPL only
 
         when(marketDataClient.getQuotes(List.of("MSFT"))).thenReturn(
-                Map.of("MSFT", new Quote("MSFT", BigDecimal.valueOf(300), BigDecimal.valueOf(-0.5), Instant.now()))
+                Map.of("MSFT", new Quote("MSFT", BigDecimal.valueOf(300), BigDecimal.valueOf(-0.5), 2_000_000L, Instant.now()))
         );
 
         Map<String, Quote> result = cacheService.getQuotes(List.of("AAPL", "MSFT"));

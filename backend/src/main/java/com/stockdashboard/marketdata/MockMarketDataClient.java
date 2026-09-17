@@ -32,11 +32,14 @@ public class MockMarketDataClient implements MarketDataClient {
         for (String ticker : tickers) {
             Random random = new Random(ticker.hashCode());
             double basePrice = 20 + random.nextDouble() * 480; // a stable-per-ticker price between $20 and $500
+            long baseVolume = 500_000 + (long) (random.nextDouble() * 49_500_000); // stable-per-ticker "typical" volume
             double changePercent = (new Random().nextDouble() - 0.5) * 6; // +/- 3%, fresh jitter every call
+            long volumeJitter = (long) ((new Random().nextDouble() - 0.5) * baseVolume * 0.4); // today's volume wobbles around the typical one
             result.put(ticker, new Quote(
                     ticker,
                     BigDecimal.valueOf(basePrice).setScale(2, RoundingMode.HALF_UP),
                     BigDecimal.valueOf(changePercent).setScale(2, RoundingMode.HALF_UP),
+                    Math.max(0, baseVolume + volumeJitter),
                     Instant.now()
             ));
         }

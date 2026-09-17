@@ -1,0 +1,103 @@
+.suggestion-block {
+  max-width: 760px;
+  margin-top: 2.5rem;
+}
+
+.suggestion-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.suggestion-header h2 {
+  margin: 0;
+}
+
+.suggestion-limit-select {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: white;
+  color: #111;
+  font-size: 0.85rem;
+}
+
+.suggestion-error {
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.suggestion-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.suggestion-table th {
+  text-align: left;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #666;
+  background: #fafafa;
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid #eee;
+}
+
+.suggestion-table th.numeric,
+.suggestion-table td.numeric {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.suggestion-table td {
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid #f0f0f0;
+  background: white;
+}
+
+.suggestion-table tr:last-child td {
+  border-bottom: none;
+}
+
+.suggestion-ticker {
+  font-weight: 700;
+}
+
+.suggestion-change.positive {
+  color: #16a34a;
+  font-weight: 600;
+}
+
+.suggestion-change.negative {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.suggestion-fav-button {
+  background: none;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 0.2rem 0.55rem;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: #444;
+}
+
+.suggestion-fav-button:hover {
+  border-color: #2563eb;
+  color: #2563eb;
+}
+
+.suggestion-fav-button.already {
+  color: #999;
+  cursor: default;
+  border-color: #eee;
+}
