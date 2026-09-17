@@ -4,11 +4,14 @@ import { FavoritesList } from "../favorites/FavoritesList";
 import { MostActiveBlock } from "../suggestions/MostActiveBlock";
 import { EarningsBlock } from "../suggestions/EarningsBlock";
 import { StrategyBlock } from "../suggestions/StrategyBlock";
+import { MarketToggle } from "../suggestions/MarketToggle";
+import type { Market } from "../suggestions/market";
 import "./dashboard.css";
 
 export function DashboardPage() {
   const { user, logout } = useAuth();
   const [favoritesRefreshSignal, setFavoritesRefreshSignal] = useState(0);
+  const [market, setMarket] = useState<Market>("US");
 
   return (
     <div className="dashboard-page">
@@ -22,14 +25,16 @@ export function DashboardPage() {
         </button>
       </div>
 
+      <MarketToggle market={market} onChange={setMarket} />
+
       <div className="dashboard-grid">
         <div className="dashboard-column">
           <FavoritesList refreshSignal={favoritesRefreshSignal} />
-          <MostActiveBlock onFavoriteAdded={() => setFavoritesRefreshSignal((n) => n + 1)} />
+          <MostActiveBlock market={market} onFavoriteAdded={() => setFavoritesRefreshSignal((n) => n + 1)} />
         </div>
         <div className="dashboard-column">
-          <EarningsBlock />
-          <StrategyBlock />
+          <EarningsBlock market={market} />
+          <StrategyBlock market={market} />
         </div>
       </div>
     </div>

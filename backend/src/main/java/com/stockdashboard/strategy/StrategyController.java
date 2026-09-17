@@ -1,5 +1,6 @@
 package com.stockdashboard.strategy;
 
+import com.stockdashboard.suggestions.Market;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +18,10 @@ public class StrategyController {
     private final StrategyService strategyService;
 
     @GetMapping
-    public ResponseEntity<List<StrategySignalResponse>> signals(@RequestParam(defaultValue = "10") int limit) {
-        return ResponseEntity.ok(strategyService.getSignals(limit));
+    public ResponseEntity<List<StrategySignalResponse>> signals(
+            @RequestParam(defaultValue = "10") int limit,
+            @RequestParam(defaultValue = "US") Market market
+    ) {
+        return ResponseEntity.ok(strategyService.getSignals(limit, market));
     }
 }

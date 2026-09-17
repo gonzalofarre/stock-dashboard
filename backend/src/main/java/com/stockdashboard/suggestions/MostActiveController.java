@@ -17,7 +17,10 @@ public class MostActiveController {
     private final MostActiveService mostActiveService;
 
     @GetMapping
-    public ResponseEntity<List<MostActiveResponse>> mostActive(@RequestParam(defaultValue = "10") int limit) {
-        return ResponseEntity.ok(mostActiveService.getMostActive(limit));
+    public ResponseEntity<List<MostActiveResponse>> mostActive(
+            @RequestParam(defaultValue = "10") int limit,
+            @RequestParam(defaultValue = "US") Market market
+    ) {
+        return ResponseEntity.ok(mostActiveService.getMostActive(limit, market));
     }
 }

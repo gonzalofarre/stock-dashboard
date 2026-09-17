@@ -1,4 +1,5 @@
 import { apiClient } from "../../lib/apiClient";
+import type { Market } from "./market";
 
 export interface MostActiveStock {
   ticker: string;
@@ -9,6 +10,6 @@ export interface MostActiveStock {
 }
 
 export const suggestionsApi = {
-  mostActive: (limit: number) =>
-    apiClient.get<MostActiveStock[]>("/api/suggestions/most-active", { params: { limit } }),
+  mostActive: (limit: number, market: Market) =>
+    apiClient.get<MostActiveStock[]>("/api/suggestions/most-active", { params: { limit, market } }),
 };

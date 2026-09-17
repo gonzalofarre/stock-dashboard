@@ -17,10 +17,10 @@ public class MostActiveService {
 
     private final QuoteCacheService quoteCacheService;
 
-    public List<MostActiveResponse> getMostActive(int requestedLimit) {
+    public List<MostActiveResponse> getMostActive(int requestedLimit, Market market) {
         int limit = Math.clamp(requestedLimit, MIN_RESULTS, MAX_RESULTS);
 
-        var quotes = quoteCacheService.getQuotes(StockUniverse.LIQUID_US_STOCKS);
+        var quotes = quoteCacheService.getQuotes(StockUniverse.tickersFor(market));
 
         return quotes.values().stream()
                 .filter(quote -> quote.volume() != null)

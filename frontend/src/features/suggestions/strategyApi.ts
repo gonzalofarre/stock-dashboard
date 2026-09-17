@@ -1,4 +1,5 @@
 import { apiClient } from "../../lib/apiClient";
+import type { Market } from "./market";
 
 export interface StrategySignal {
   ticker: string;
@@ -10,5 +11,6 @@ export interface StrategySignal {
 }
 
 export const strategyApi = {
-  signals: (limit: number) => apiClient.get<StrategySignal[]>("/api/suggestions/strategy", { params: { limit } }),
+  signals: (limit: number, market: Market) =>
+    apiClient.get<StrategySignal[]>("/api/suggestions/strategy", { params: { limit, market } }),
 };

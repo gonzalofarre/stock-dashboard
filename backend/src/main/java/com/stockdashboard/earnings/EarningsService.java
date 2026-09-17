@@ -1,5 +1,6 @@
 package com.stockdashboard.earnings;
 
+import com.stockdashboard.suggestions.Market;
 import com.stockdashboard.suggestions.StockUniverse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,12 +22,12 @@ public class EarningsService {
 
     private final EarningsClient earningsClient;
 
-    public List<UpcomingEarningsResponse> getUpcoming(int requestedLimit) {
+    public List<UpcomingEarningsResponse> getUpcoming(int requestedLimit, Market market) {
         int limit = Math.clamp(requestedLimit, MIN_RESULTS, MAX_RESULTS);
         LocalDate today = LocalDate.now();
 
-        List<EarningsEvent> events =
-                earningsClient.getEarningsCalendar(StockUniverse.LIQUID_US_STOCKS, today, today.plusDays(UPCOMING_WINDOW_DAYS));
+        List<EarningsEvent> events = earningsClient.getEarningsCalendar(
+                StockUniverse.tickersFor(market), today, today.plusDays(UPCOMING_WINDOW_DAYS));
 
         return events.stream()
                 .filter(e -> !e.reportDate().isBefore(today))
@@ -36,12 +37,12 @@ public class EarningsService {
                 .toList();
     }
 
-    public List<EarningsSurpriseResponse> getBestSurprises(int requestedLimit) {
+    public List<EarningsSurpriseResponse> getBestSurprises(int requestedLimit, Market market) {
         int limit = Math.clamp(requestedLimit, MIN_RESULTS, MAX_RESULTS);
         LocalDate today = LocalDate.now();
 
         List<EarningsEvent> events = earningsClient.getEarningsCalendar(
-                StockUniverse.LIQUID_US_STOCKS, today.minusDays(SURPRISE_WINDOW_DAYS), today.minusDays(1));
+                StockUniverse.tickersFor(market), today.minusDays(SURPRISE_WINDOW_DAYS), today.minusDays(1));
 
         return events.stream()
                 .filter(e -> e.epsActual() != null && e.epsEstimated() != null

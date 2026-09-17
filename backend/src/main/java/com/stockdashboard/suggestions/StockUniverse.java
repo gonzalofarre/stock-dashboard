@@ -4,21 +4,25 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A hand-picked list of ~50 large, liquid, well-known US tickers spanning
- * several sectors — used as the pool that "most active" and (later) the
- * intraday-strategy suggestion rank/filter over.
+ * Hand-picked ticker universes that "most active", "strategy", and earnings
+ * rank/filter over — one per {@link Market}. Deliberately NOT a full-market
+ * scan: see the class-level reasoning that used to live here, still true —
+ * Twelve Data's free tier doesn't give confident access to a dedicated
+ * screener endpoint, so this reuses the already-tested per-symbol quote
+ * infrastructure (see marketdata/QuoteCacheService) over a curated list
+ * instead.
  *
- * This is deliberately NOT a full-market scan: Twelve Data's free tier
- * doesn't give confident access to a dedicated "most active by volume"
- * screener endpoint, so instead of guessing at an unverified endpoint, this
- * reuses the already-tested per-symbol quote infrastructure (see
- * marketdata/QuoteCacheService) over a curated universe. Real "market-wide"
- * coverage would need a different (likely paid) data source — worth
- * revisiting if this universe turns out to be too narrow in practice.
+ * {@code ARGENTINA_TICKERS} is Argentine companies' US-listed ADRs (priced
+ * in USD on NYSE/NASDAQ), NOT their BYMA/Merval-listed local shares (priced
+ * in ARS) — Twelve Data's free tier only covers ~3 markets, and BYMA isn't
+ * one of them. Every ticker below was individually confirmed against a real
+ * Twelve Data /quote response before being added; don't add one without
+ * doing the same; a plausible-looking ticker for a delisted or ARS-only
+ * line would fail silently (quoteAvailable: false) rather than error.
  */
 public final class StockUniverse {
 
-    public static final List<String> LIQUID_US_STOCKS = List.of(
+    public static final List<String> US_TICKERS = List.of(
             "AAPL", "MSFT", "GOOGL", "AMZN", "NVDA", "META", "TSLA", "AVGO", "JPM", "V",
             "UNH", "XOM", "JNJ", "WMT", "PG", "MA", "HD", "CVX", "MRK", "ABBV",
             "KO", "PEP", "BAC", "COST", "TMO", "MCD", "CSCO", "ACN", "ABT", "DHR",
@@ -26,12 +30,25 @@ public final class StockUniverse {
             "NKE", "ORCL", "IBM", "GE", "CAT", "BA", "UPS", "F", "GM", "SBUX"
     );
 
+    public static final List<String> ARGENTINA_TICKERS = List.of(
+            "GGAL", "YPF", "BMA", "PAM", "TEO", "CRESY", "IRS", "LOMA"
+    );
+
+    public static List<String> tickersFor(Market market) {
+        return switch (market) {
+            case US -> US_TICKERS;
+            case ARGENTINA -> ARGENTINA_TICKERS;
+        };
+    }
+
     /**
-     * Company names for the tickers above — used to show a full name on
-     * ticker hover across the app. Only covers this curated universe; a
-     * ticker a user favorites outside of it (favorites accepts free-text)
-     * won't have an entry here, and getQuotes()'s own {@code name} (from the
-     * live provider, when available) is the fallback for those.
+     * Company names for every ticker above — used to show a full name on
+     * ticker hover across the app, and to power the favorites-input
+     * autocomplete (StockService.getUniverse — deliberately market-agnostic,
+     * since a user's favorites aren't segmented by market). A ticker a user
+     * favorites outside both lists (favorites accepts free-text) won't have
+     * an entry here, and getQuotes()'s own {@code name} (from the live
+     * provider, when available) is the fallback for those.
      */
     public static final Map<String, String> COMPANY_NAMES = Map.ofEntries(
             Map.entry("AAPL", "Apple Inc."),
@@ -83,7 +100,16 @@ public final class StockUniverse {
             Map.entry("UPS", "United Parcel Service, Inc."),
             Map.entry("F", "Ford Motor Company"),
             Map.entry("GM", "General Motors Company"),
-            Map.entry("SBUX", "Starbucks Corporation")
+            Map.entry("SBUX", "Starbucks Corporation"),
+            // Argentina (US-listed ADRs) — see class Javadoc.
+            Map.entry("GGAL", "Grupo Financiero Galicia S.A."),
+            Map.entry("YPF", "YPF Sociedad Anónima"),
+            Map.entry("BMA", "Banco Macro S.A."),
+            Map.entry("PAM", "Pampa Energía S.A."),
+            Map.entry("TEO", "Telecom Argentina S.A."),
+            Map.entry("CRESY", "Cresud S.A.C.I.F. y A."),
+            Map.entry("IRS", "IRSA Inversiones y Representaciones S.A."),
+            Map.entry("LOMA", "Loma Negra Compañía Industrial Argentina S.A.")
     );
 
     private StockUniverse() {

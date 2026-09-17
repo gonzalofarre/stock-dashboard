@@ -1,5 +1,6 @@
 package com.stockdashboard.strategy;
 
+import com.stockdashboard.suggestions.Market;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -60,7 +61,7 @@ class StrategyServiceTest {
         when(priceSeriesClient.getIntradaySeries(any(), anyInt()))
                 .thenReturn(Map.of("UP", flatWithStepAt(50, 47, 1.2)));
 
-        List<StrategySignalResponse> result = strategyService.getSignals(10);
+        List<StrategySignalResponse> result = strategyService.getSignals(10, Market.US);
 
         assertThat(result).anySatisfy(s -> {
             assertThat(s.ticker()).isEqualTo("UP");
@@ -74,7 +75,7 @@ class StrategyServiceTest {
         when(priceSeriesClient.getIntradaySeries(any(), anyInt()))
                 .thenReturn(Map.of("FLAT", flatWithStepAt(50, 999, 1.0)));
 
-        assertThat(strategyService.getSignals(10)).isEmpty();
+        assertThat(strategyService.getSignals(10, Market.US)).isEmpty();
     }
 
     @Test
@@ -82,7 +83,7 @@ class StrategyServiceTest {
         when(priceSeriesClient.getIntradaySeries(any(), anyInt()))
                 .thenReturn(Map.of("SHORT", flatWithStepAt(30, 20, 1.2)));
 
-        assertThat(strategyService.getSignals(10)).isEmpty();
+        assertThat(strategyService.getSignals(10, Market.US)).isEmpty();
     }
 
     @Test
@@ -93,8 +94,8 @@ class StrategyServiceTest {
         }
         when(priceSeriesClient.getIntradaySeries(any(), anyInt())).thenReturn(many);
 
-        assertThat(strategyService.getSignals(1)).hasSize(5); // below min -> clamped up to 5
-        assertThat(strategyService.getSignals(50)).hasSize(10); // above max -> clamped down to 10
+        assertThat(strategyService.getSignals(1, Market.US)).hasSize(5); // below min -> clamped up to 5
+        assertThat(strategyService.getSignals(50, Market.US)).hasSize(10); // above max -> clamped down to 10
     }
 
     @Test
@@ -104,7 +105,7 @@ class StrategyServiceTest {
         many.put("B", flatWithStepAt(50, 48, 1.2)); // crosses 1 bar ago
         when(priceSeriesClient.getIntradaySeries(any(), anyInt())).thenReturn(many);
 
-        List<StrategySignalResponse> result = strategyService.getSignals(10);
+        List<StrategySignalResponse> result = strategyService.getSignals(10, Market.US);
 
         assertThat(result).isNotEmpty();
         assertThat(result).isSortedAccordingTo(Comparator.comparingInt(StrategySignalResponse::minutesAgo));

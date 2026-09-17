@@ -3,6 +3,7 @@ import axios from "axios";
 import { TickerLink } from "../../components/TickerLink";
 import { type MostActiveStock, suggestionsApi } from "./suggestionsApi";
 import { favoritesApi } from "../favorites/favoritesApi";
+import type { Market } from "./market";
 import "./suggestions.css";
 
 function formatVolume(volume: number): string {
@@ -14,7 +15,13 @@ function formatVolume(volume: number): string {
 /** Suggestion block 1: today's most active (highest-volume) stocks from a
  * curated liquid-stock universe — see StockUniverse.java for why it's not a
  * full market scan. Clicking a ticker opens its detail view (Phase 6). */
-export function MostActiveBlock({ onFavoriteAdded }: { onFavoriteAdded?: () => void } = {}) {
+export function MostActiveBlock({
+  market,
+  onFavoriteAdded,
+}: {
+  market: Market;
+  onFavoriteAdded?: () => void;
+}) {
   const [limit, setLimit] = useState(10);
   const [stocks, setStocks] = useState<MostActiveStock[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -24,10 +31,10 @@ export function MostActiveBlock({ onFavoriteAdded }: { onFavoriteAdded?: () => v
     setStocks(null);
     setError(null);
     suggestionsApi
-      .mostActive(limit)
+      .mostActive(limit, market)
       .then(({ data }) => setStocks(data))
       .catch(() => setError("No se pudo cargar el listado de más activas."));
-  }, [limit]);
+  }, [limit, market]);
 
   // Seed "already a favorite" state from what's actually on the server, once
   // on mount — otherwise a ticker favorited in a PREVIOUS visit still shows

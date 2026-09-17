@@ -1,5 +1,6 @@
 package com.stockdashboard.strategy;
 
+import com.stockdashboard.suggestions.Market;
 import com.stockdashboard.suggestions.StockUniverse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -43,10 +44,11 @@ public class StrategyService {
 
     private final PriceSeriesCacheService priceSeriesCacheService;
 
-    public List<StrategySignalResponse> getSignals(int requestedLimit) {
+    public List<StrategySignalResponse> getSignals(int requestedLimit, Market market) {
         int limit = Math.clamp(requestedLimit, MIN_RESULTS, MAX_RESULTS);
 
-        Map<String, List<Bar>> series = priceSeriesCacheService.getIntradaySeries(StockUniverse.LIQUID_US_STOCKS, BARS_REQUESTED);
+        Map<String, List<Bar>> series =
+                priceSeriesCacheService.getIntradaySeries(StockUniverse.tickersFor(market), BARS_REQUESTED);
 
         List<StrategySignalResponse> signals = new ArrayList<>();
         for (var entry : series.entrySet()) {

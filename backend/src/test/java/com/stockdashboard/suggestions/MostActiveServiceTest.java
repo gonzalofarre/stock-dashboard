@@ -42,7 +42,7 @@ class MostActiveServiceTest {
                 "MID", quote("MID", 5_000)
         ));
 
-        List<MostActiveResponse> result = mostActiveService.getMostActive(5);
+        List<MostActiveResponse> result = mostActiveService.getMostActive(5, Market.US);
 
         assertThat(result).extracting(MostActiveResponse::ticker).containsExactly("HIGH", "MID", "LOW");
     }
@@ -54,7 +54,7 @@ class MostActiveServiceTest {
                 "NOVOL", new Quote("NOVOL", BigDecimal.TEN, BigDecimal.ONE, null, null, Instant.now())
         ));
 
-        List<MostActiveResponse> result = mostActiveService.getMostActive(10);
+        List<MostActiveResponse> result = mostActiveService.getMostActive(10, Market.US);
 
         assertThat(result).extracting(MostActiveResponse::ticker).containsExactly("GOOD");
     }
@@ -67,8 +67,8 @@ class MostActiveServiceTest {
         }
         when(quoteCacheService.getQuotes(any())).thenReturn(manyQuotes);
 
-        assertThat(mostActiveService.getMostActive(1)).hasSize(5); // below min -> clamped up to 5
-        assertThat(mostActiveService.getMostActive(50)).hasSize(10); // above max -> clamped down to 10
-        assertThat(mostActiveService.getMostActive(7)).hasSize(7); // within range -> respected as-is
+        assertThat(mostActiveService.getMostActive(1, Market.US)).hasSize(5); // below min -> clamped up to 5
+        assertThat(mostActiveService.getMostActive(50, Market.US)).hasSize(10); // above max -> clamped down to 10
+        assertThat(mostActiveService.getMostActive(7, Market.US)).hasSize(7); // within range -> respected as-is
     }
 }

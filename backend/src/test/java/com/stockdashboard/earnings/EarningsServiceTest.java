@@ -1,5 +1,6 @@
 package com.stockdashboard.earnings;
 
+import com.stockdashboard.suggestions.Market;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,7 +37,7 @@ class EarningsServiceTest {
                 new EarningsEvent("MID", today.plusDays(5), ReportTime.UNSPECIFIED, BigDecimal.ONE, null)
         ));
 
-        List<UpcomingEarningsResponse> result = earningsService.getUpcoming(5);
+        List<UpcomingEarningsResponse> result = earningsService.getUpcoming(5, Market.US);
 
         assertThat(result).extracting(UpcomingEarningsResponse::ticker).containsExactly("SOON", "MID", "LATE");
     }
@@ -49,7 +50,7 @@ class EarningsServiceTest {
                 new EarningsEvent("TODAY", today, ReportTime.BEFORE_OPEN, BigDecimal.ONE, null)
         ));
 
-        List<UpcomingEarningsResponse> result = earningsService.getUpcoming(5);
+        List<UpcomingEarningsResponse> result = earningsService.getUpcoming(5, Market.US);
 
         assertThat(result).extracting(UpcomingEarningsResponse::ticker).containsExactly("TODAY");
     }
@@ -62,9 +63,9 @@ class EarningsServiceTest {
                 .toList();
         when(earningsClient.getEarningsCalendar(any(), any(), any())).thenReturn(many);
 
-        assertThat(earningsService.getUpcoming(1)).hasSize(5);
-        assertThat(earningsService.getUpcoming(50)).hasSize(10);
-        assertThat(earningsService.getUpcoming(7)).hasSize(7);
+        assertThat(earningsService.getUpcoming(1, Market.US)).hasSize(5);
+        assertThat(earningsService.getUpcoming(50, Market.US)).hasSize(10);
+        assertThat(earningsService.getUpcoming(7, Market.US)).hasSize(7);
     }
 
     @Test
@@ -76,7 +77,7 @@ class EarningsServiceTest {
                 new EarningsEvent("BEAT_SMALL", reportDate, ReportTime.BEFORE_OPEN, BigDecimal.valueOf(1.00), BigDecimal.valueOf(1.05))
         ));
 
-        List<EarningsSurpriseResponse> result = earningsService.getBestSurprises(5);
+        List<EarningsSurpriseResponse> result = earningsService.getBestSurprises(5, Market.US);
 
         assertThat(result).extracting(EarningsSurpriseResponse::ticker).containsExactly("BEAT_BIG", "BEAT_SMALL", "MISS");
         assertThat(result.get(0).surprisePercent()).isEqualByComparingTo("20.00");
@@ -92,7 +93,7 @@ class EarningsServiceTest {
                 new EarningsEvent("VALID", reportDate, ReportTime.AFTER_CLOSE, BigDecimal.ONE, BigDecimal.valueOf(1.10))
         ));
 
-        List<EarningsSurpriseResponse> result = earningsService.getBestSurprises(5);
+        List<EarningsSurpriseResponse> result = earningsService.getBestSurprises(5, Market.US);
 
         assertThat(result).extracting(EarningsSurpriseResponse::ticker).containsExactly("VALID");
     }

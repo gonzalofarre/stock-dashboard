@@ -1,4 +1,5 @@
 import { apiClient } from "../../lib/apiClient";
+import type { Market } from "./market";
 
 export interface UpcomingEarnings {
   ticker: string;
@@ -15,8 +16,8 @@ export interface EarningsSurprise {
 }
 
 export const earningsApi = {
-  upcoming: (limit: number) =>
-    apiClient.get<UpcomingEarnings[]>("/api/suggestions/earnings/upcoming", { params: { limit } }),
-  surprises: (limit: number) =>
-    apiClient.get<EarningsSurprise[]>("/api/suggestions/earnings/surprises", { params: { limit } }),
+  upcoming: (limit: number, market: Market) =>
+    apiClient.get<UpcomingEarnings[]>("/api/suggestions/earnings/upcoming", { params: { limit, market } }),
+  surprises: (limit: number, market: Market) =>
+    apiClient.get<EarningsSurprise[]>("/api/suggestions/earnings/surprises", { params: { limit, market } }),
 };

@@ -1,0 +1,41 @@
+.market-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.market-toggle-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-faint);
+}
+
+.market-toggle-buttons {
+  display: inline-flex;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 3px;
+  gap: 3px;
+}
+
+.market-toggle-buttons button {
+  border: none;
+  border-radius: 999px;
+  background: none;
+  color: var(--text-muted);
+  padding: 0.45rem 0.9rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+}
+
+.market-toggle-buttons button.active {
+  background: var(--brand);
+  color: var(--brand-ink);
+  box-shadow: 0 0 14px var(--brand-glow);
+}

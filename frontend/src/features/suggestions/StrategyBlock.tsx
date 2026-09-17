@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { TickerLink } from "../../components/TickerLink";
 import { strategyApi, type StrategySignal } from "./strategyApi";
+import type { Market } from "./market";
 import "./suggestions.css";
 
 const TYPE_LABEL: Record<StrategySignal["type"], string> = {
@@ -36,7 +37,7 @@ function DirectionIcon({ direction }: { direction: StrategySignal["direction"] }
  * only needs a label here, nothing structural changes. Unlike the other two
  * blocks, this can legitimately come back with fewer than `limit` results —
  * a scan just might not find that many fresh crossovers right now. */
-export function StrategyBlock() {
+export function StrategyBlock({ market }: { market: Market }) {
   const [limit, setLimit] = useState(10);
   const [signals, setSignals] = useState<StrategySignal[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -45,10 +46,10 @@ export function StrategyBlock() {
     setSignals(null);
     setError(null);
     strategyApi
-      .signals(limit)
+      .signals(limit, market)
       .then(({ data }) => setSignals(data))
       .catch(() => setError("No se pudo cargar la estrategia intradiaria."));
-  }, [limit]);
+  }, [limit, market]);
 
   return (
     <div className="suggestion-block">

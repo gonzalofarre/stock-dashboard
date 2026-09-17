@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { TickerLink } from "../../components/TickerLink";
 import { earningsApi, type EarningsSurprise, type UpcomingEarnings } from "./earningsApi";
+import type { Market } from "./market";
 import "./suggestions.css";
 
 function daysFromToday(dateStr: string): number {
@@ -33,7 +34,7 @@ function formatTime(time: UpcomingEarnings["time"]): string {
 /** Suggestion block 2: upcoming earnings + best recent earnings surprises,
  * both over the same curated liquid-stock universe as "most active" — see
  * StockUniverse.java. Both panels share one result-count control. */
-export function EarningsBlock() {
+export function EarningsBlock({ market }: { market: Market }) {
   const [limit, setLimit] = useState(6);
   const [upcoming, setUpcoming] = useState<UpcomingEarnings[] | null>(null);
   const [surprises, setSurprises] = useState<EarningsSurprise[] | null>(null);
@@ -43,13 +44,13 @@ export function EarningsBlock() {
     setUpcoming(null);
     setSurprises(null);
     setError(null);
-    Promise.all([earningsApi.upcoming(limit), earningsApi.surprises(limit)])
+    Promise.all([earningsApi.upcoming(limit, market), earningsApi.surprises(limit, market)])
       .then(([upcomingRes, surprisesRes]) => {
         setUpcoming(upcomingRes.data);
         setSurprises(surprisesRes.data);
       })
       .catch(() => setError("No se pudo cargar la información de earnings."));
-  }, [limit]);
+  }, [limit, market]);
 
   return (
     <div className="suggestion-block">
