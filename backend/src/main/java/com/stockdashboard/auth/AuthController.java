@@ -7,8 +7,10 @@ import com.stockdashboard.auth.dto.RegisterRequest;
 import com.stockdashboard.auth.dto.VerifyEmailRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,6 +19,17 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
+    private final ObjectProvider<ClientRegistrationRepository> clientRegistrationRepository;
+
+    /** So the login/register pages can hide "Continuar con Google" instead
+     * of showing a button that 500s — see config/GoogleOAuth2Config.java. */
+    public record AuthConfigResponse(boolean googleLoginEnabled) {
+    }
+
+    @GetMapping("/config")
+    public ResponseEntity<AuthConfigResponse> config() {
+        return ResponseEntity.ok(new AuthConfigResponse(clientRegistrationRepository.getIfAvailable() != null));
+    }
 
     @PostMapping("/register")
     public ResponseEntity<Void> register(@Valid @RequestBody RegisterRequest request) {

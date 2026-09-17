@@ -2,10 +2,12 @@ import { type FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { authApi, startGoogleLogin } from "./authApi";
+import { useGoogleLoginEnabled } from "./useGoogleLoginEnabled";
 import "./auth.css";
 
 export function RegisterPage() {
   const navigate = useNavigate();
+  const googleLoginEnabled = useGoogleLoginEnabled();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -66,10 +68,14 @@ export function RegisterPage() {
             {loading ? "Creando cuenta..." : "Crear cuenta"}
           </button>
         </form>
-        <div className="auth-divider">o</div>
-        <button className="auth-google-button" type="button" onClick={startGoogleLogin}>
-          Continuar con Google
-        </button>
+        {googleLoginEnabled && (
+          <>
+            <div className="auth-divider">o</div>
+            <button className="auth-google-button" type="button" onClick={startGoogleLogin}>
+              Continuar con Google
+            </button>
+          </>
+        )}
         <div className="auth-footer">
           ¿Ya tenés cuenta? <Link to="/login">Iniciá sesión</Link>
         </div>

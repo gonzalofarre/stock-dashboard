@@ -23,6 +23,8 @@ export const authApi = {
   logout: (refreshToken: string) => apiClient.post<void>("/api/auth/logout", { refreshToken }),
 
   me: () => apiClient.get<AuthResponse["user"]>("/api/auth/me"),
+
+  config: () => apiClient.get<{ googleLoginEnabled: boolean }>("/api/auth/config"),
 };
 
 /** The backend does its own OAuth2 dance server-side; this just navigates the

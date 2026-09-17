@@ -74,25 +74,7 @@ app:
     cache-ttl-seconds: ${STRATEGY_CACHE_TTL_SECONDS:1800}
     max-stale-fetch-per-call: ${STRATEGY_MAX_STALE_FETCH:100}
 
----
-# This whole document only activates once GOOGLE_CLIENT_ID is actually set —
-# Spring Boot's OAuth2 client autoconfiguration eagerly validates that a
-# registered provider's client-id is non-empty, so without this guard the
-# app refuses to start at all until Google credentials exist. Keeping it
-# conditional means "Login with Google" simply isn't offered until you add
-# real credentials, instead of blocking local development before then.
-spring:
-  config:
-    activate:
-      on-property: GOOGLE_CLIENT_ID
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            client-id: ${GOOGLE_CLIENT_ID}
-            client-secret: ${GOOGLE_CLIENT_SECRET}
-            scope:
-              - openid
-              - profile
-              - email
+# Google "Sign in with Google" (GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET) is
+# wired in code now, not here — see config/GoogleOAuth2Config.java for why a
+# properties-based conditional document (spring.config.activate.on-property)
+# turned out not to be a reliable gate for this.
