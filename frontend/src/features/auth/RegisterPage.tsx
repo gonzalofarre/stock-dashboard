@@ -4,6 +4,7 @@ import axios from "axios";
 import { authApi, startGoogleLogin } from "./authApi";
 import { useGoogleLoginEnabled } from "./useGoogleLoginEnabled";
 import { GoogleIcon } from "./GoogleIcon";
+import { Brand } from "../../components/Brand";
 import "./auth.css";
 
 export function RegisterPage() {
@@ -39,6 +40,7 @@ export function RegisterPage() {
   return (
     <div className="auth-page">
       <div className="auth-card">
+        <Brand />
         <h1>Crear cuenta</h1>
         {error && <div className="auth-error">{error}</div>}
         <form onSubmit={handleSubmit}>

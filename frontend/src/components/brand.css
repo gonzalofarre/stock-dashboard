@@ -1,0 +1,40 @@
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.brand-icon {
+  border-radius: 50%;
+  display: block;
+}
+
+.brand-name {
+  font-family: "Unbounded", system-ui, sans-serif;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: 0.01em;
+}
+
+.brand-md {
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.brand-md .brand-icon {
+  width: 48px;
+  height: 48px;
+}
+
+.brand-md .brand-name {
+  font-size: 1.1rem;
+}
+
+.brand-sm .brand-icon {
+  width: 32px;
+  height: 32px;
+}
+
+.brand-sm .brand-name {
+  font-size: 0.95rem;
+}

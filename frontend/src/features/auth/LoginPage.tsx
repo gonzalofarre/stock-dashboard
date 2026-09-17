@@ -5,6 +5,7 @@ import { useAuth } from "./AuthContext";
 import { startGoogleLogin } from "./authApi";
 import { useGoogleLoginEnabled } from "./useGoogleLoginEnabled";
 import { GoogleIcon } from "./GoogleIcon";
+import { Brand } from "../../components/Brand";
 import "./auth.css";
 
 export function LoginPage() {
@@ -38,6 +39,7 @@ export function LoginPage() {
   return (
     <div className="auth-page">
       <div className="auth-card">
+        <Brand />
         <h1>Iniciar sesión</h1>
         {error && <div className="auth-error">{error}</div>}
         <form onSubmit={handleSubmit}>

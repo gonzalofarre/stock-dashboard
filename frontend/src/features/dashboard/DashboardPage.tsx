@@ -6,6 +6,7 @@ import { EarningsBlock } from "../suggestions/EarningsBlock";
 import { StrategyBlock } from "../suggestions/StrategyBlock";
 import { MarketToggle } from "../suggestions/MarketToggle";
 import type { Market } from "../suggestions/market";
+import { Brand } from "../../components/Brand";
 import "./dashboard.css";
 
 export function DashboardPage() {
@@ -16,9 +17,12 @@ export function DashboardPage() {
   return (
     <div className="dashboard-page">
       <div className="dashboard-header">
-        <div>
-          <h1>Hola, {user?.firstName}</h1>
-          <p>{user?.email}</p>
+        <div className="dashboard-header-main">
+          <Brand size="sm" />
+          <div>
+            <h1>Hola, {user?.firstName}</h1>
+            <p>{user?.email}</p>
+          </div>
         </div>
         <button className="dashboard-logout" onClick={logout}>
           Cerrar sesión

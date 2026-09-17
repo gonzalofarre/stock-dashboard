@@ -31,6 +31,14 @@
   margin-bottom: 2.5rem;
   padding-bottom: 1.5rem;
   border-bottom: 1px solid var(--border);
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.dashboard-header-main {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
 }
 
 .dashboard-header h1 {
