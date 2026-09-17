@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import axios from "axios";
+import { TickerLink } from "../../components/TickerLink";
 import { type MostActiveStock, suggestionsApi } from "./suggestionsApi";
 import { favoritesApi } from "../favorites/favoritesApi";
 import "./suggestions.css";
@@ -89,9 +89,7 @@ export function MostActiveBlock({ onFavoriteAdded }: { onFavoriteAdded?: () => v
             {stocks.map((stock) => (
               <tr key={stock.ticker}>
                 <td>
-                  <Link to={`/stock/${stock.ticker}`} className="suggestion-ticker" title={stock.name ?? undefined}>
-                    {stock.ticker}
-                  </Link>
+                  <TickerLink ticker={stock.ticker} name={stock.name} className="suggestion-ticker" />
                 </td>
                 <td className="numeric">${stock.price.toFixed(2)}</td>
                 <td className={`numeric suggestion-change ${stock.changePercent >= 0 ? "positive" : "negative"}`}>

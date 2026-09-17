@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { TickerLink } from "../../components/TickerLink";
 import { earningsApi, type EarningsSurprise, type UpcomingEarnings } from "./earningsApi";
 import "./suggestions.css";
 
@@ -79,9 +79,7 @@ export function EarningsBlock() {
             <ul className="earnings-list">
               {upcoming.map((e) => (
                 <li key={e.ticker} className="earnings-row">
-                  <Link to={`/stock/${e.ticker}`} className="earnings-ticker" title={e.companyName ?? undefined}>
-                    {e.ticker}
-                  </Link>
+                  <TickerLink ticker={e.ticker} name={e.companyName} className="earnings-ticker" />
                   <span className="earnings-badge warn">
                     {formatUpcomingWhen(e.reportDate)}
                     {formatTime(e.time) ? ` · ${formatTime(e.time)}` : ""}
@@ -100,9 +98,7 @@ export function EarningsBlock() {
             <ul className="earnings-list">
               {surprises.map((s) => (
                 <li key={s.ticker} className="earnings-row">
-                  <Link to={`/stock/${s.ticker}`} className="earnings-ticker" title={s.companyName ?? undefined}>
-                    {s.ticker}
-                  </Link>
+                  <TickerLink ticker={s.ticker} name={s.companyName} className="earnings-ticker" />
                   <span className={`earnings-surprise ${s.surprisePercent >= 0 ? "positive" : "negative"}`}>
                     {s.surprisePercent >= 0 ? "+" : ""}
                     {s.surprisePercent.toFixed(2)}%

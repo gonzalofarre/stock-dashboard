@@ -1,6 +1,6 @@
 import { type FormEvent, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import axios from "axios";
+import { TickerLink } from "../../components/TickerLink";
 import { type Favorite, favoritesApi } from "./favoritesApi";
 import "./favorites.css";
 
@@ -84,9 +84,7 @@ export function FavoritesList({ refreshSignal }: { refreshSignal?: number } = {}
         <ul className="favorites-list">
           {favorites.map((favorite) => (
             <li key={favorite.ticker} className="favorite-row">
-              <Link to={`/stock/${favorite.ticker}`} className="favorite-ticker" title={favorite.name ?? undefined}>
-                {favorite.ticker}
-              </Link>
+              <TickerLink ticker={favorite.ticker} name={favorite.name} className="favorite-ticker" />
               {favorite.quoteAvailable ? (
                 <>
                   <span className="favorite-price">${favorite.price?.toFixed(2)}</span>

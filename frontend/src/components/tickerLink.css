@@ -1,0 +1,16 @@
+.ticker-tooltip {
+  position: fixed;
+  transform: translateY(-100%);
+  background: var(--surface-alt);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: 0 10px 28px -10px rgba(0, 0, 0, 0.65);
+  pointer-events: none;
+  z-index: 1000;
+}
