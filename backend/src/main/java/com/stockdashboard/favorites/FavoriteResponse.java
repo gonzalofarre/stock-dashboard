@@ -5,6 +5,7 @@ import java.time.Instant;
 
 public record FavoriteResponse(
         String ticker,
+        String name,
         BigDecimal price,
         BigDecimal changePercent,
         boolean quoteAvailable,

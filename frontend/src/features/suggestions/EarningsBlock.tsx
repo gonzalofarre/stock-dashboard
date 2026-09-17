@@ -79,7 +79,7 @@ export function EarningsBlock() {
             <ul className="earnings-list">
               {upcoming.map((e) => (
                 <li key={e.ticker} className="earnings-row">
-                  <Link to={`/stock/${e.ticker}`} className="earnings-ticker">
+                  <Link to={`/stock/${e.ticker}`} className="earnings-ticker" title={e.companyName ?? undefined}>
                     {e.ticker}
                   </Link>
                   <span className="earnings-badge warn">
@@ -100,7 +100,7 @@ export function EarningsBlock() {
             <ul className="earnings-list">
               {surprises.map((s) => (
                 <li key={s.ticker} className="earnings-row">
-                  <Link to={`/stock/${s.ticker}`} className="earnings-ticker">
+                  <Link to={`/stock/${s.ticker}`} className="earnings-ticker" title={s.companyName ?? undefined}>
                     {s.ticker}
                   </Link>
                   <span className={`earnings-surprise ${s.surprisePercent >= 0 ? "positive" : "negative"}`}>

@@ -26,7 +26,12 @@ public class MostActiveService {
                 .filter(quote -> quote.volume() != null)
                 .sorted(Comparator.comparingLong(Quote::volume).reversed())
                 .limit(limit)
-                .map(q -> new MostActiveResponse(q.ticker(), q.price(), q.changePercent(), q.volume()))
+                .map(q -> new MostActiveResponse(
+                        q.ticker(),
+                        q.name() != null ? q.name() : StockUniverse.COMPANY_NAMES.get(q.ticker()),
+                        q.price(),
+                        q.changePercent(),
+                        q.volume()))
                 .toList();
     }
 }

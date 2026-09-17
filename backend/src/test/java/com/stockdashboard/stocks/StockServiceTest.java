@@ -33,7 +33,7 @@ class StockServiceTest {
     @Test
     void returnsTheQuoteWhenAvailable() {
         when(quoteCacheService.getQuotes(java.util.List.of("AAPL"))).thenReturn(Map.of(
-                "AAPL", new Quote("AAPL", BigDecimal.valueOf(258.42), BigDecimal.valueOf(1.24), 61_200_000L, Instant.now())
+                "AAPL", new Quote("AAPL", BigDecimal.valueOf(258.42), BigDecimal.valueOf(1.24), 61_200_000L, null, Instant.now())
         ));
 
         StockQuoteResponse response = stockService.getQuote("aapl");

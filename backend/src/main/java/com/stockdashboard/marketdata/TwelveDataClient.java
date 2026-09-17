@@ -82,7 +82,8 @@ public class TwelveDataClient implements MarketDataClient {
             BigDecimal price = new BigDecimal(node.get("close").asText());
             BigDecimal changePercent = new BigDecimal(node.get("percent_change").asText());
             Long volume = node.hasNonNull("volume") ? node.get("volume").asLong() : null;
-            return java.util.Optional.of(new Quote(ticker, price, changePercent, volume, Instant.now()));
+            String name = node.hasNonNull("name") ? node.get("name").asText() : null;
+            return java.util.Optional.of(new Quote(ticker, price, changePercent, volume, name, Instant.now()));
         } catch (Exception e) {
             log.warn("Could not parse Twelve Data quote node: {}", node, e);
             return java.util.Optional.empty();

@@ -2,6 +2,7 @@ import { apiClient } from "../../lib/apiClient";
 
 export interface Favorite {
   ticker: string;
+  name: string | null;
   price: number | null;
   changePercent: number | null;
   quoteAvailable: boolean;

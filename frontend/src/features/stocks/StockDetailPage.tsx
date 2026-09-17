@@ -72,6 +72,7 @@ export function StockDetailPage() {
       <div className="stock-detail-header">
         <div>
           <h1>{symbol}</h1>
+          {quote?.name && <p className="stock-detail-company-name">{quote.name}</p>}
           {error && <div className="suggestion-error">{error}</div>}
           {!error && quote === null && <p className="stock-detail-loading">Cargando...</p>}
           {quote?.quoteAvailable && (

@@ -1,5 +1,6 @@
 package com.stockdashboard.marketdata;
 
+import com.stockdashboard.suggestions.StockUniverse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
@@ -40,6 +41,7 @@ public class MockMarketDataClient implements MarketDataClient {
                     BigDecimal.valueOf(basePrice).setScale(2, RoundingMode.HALF_UP),
                     BigDecimal.valueOf(changePercent).setScale(2, RoundingMode.HALF_UP),
                     Math.max(0, baseVolume + volumeJitter),
+                    StockUniverse.COMPANY_NAMES.get(ticker),
                     Instant.now()
             ));
         }

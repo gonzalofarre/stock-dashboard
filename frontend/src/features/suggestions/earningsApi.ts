@@ -2,12 +2,14 @@ import { apiClient } from "../../lib/apiClient";
 
 export interface UpcomingEarnings {
   ticker: string;
+  companyName: string | null;
   reportDate: string; // ISO date (yyyy-MM-dd)
   time: "BEFORE_OPEN" | "AFTER_CLOSE" | "UNSPECIFIED";
 }
 
 export interface EarningsSurprise {
   ticker: string;
+  companyName: string | null;
   reportDate: string; // ISO date (yyyy-MM-dd)
   surprisePercent: number;
 }

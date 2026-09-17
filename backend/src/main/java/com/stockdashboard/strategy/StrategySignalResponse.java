@@ -1,4 +1,13 @@
 package com.stockdashboard.strategy;
 
-public record StrategySignalResponse(String ticker, SignalType type, Direction direction, int minutesAgo) {
+import java.math.BigDecimal;
+
+public record StrategySignalResponse(
+        String ticker,
+        String companyName,
+        SignalType type,
+        Direction direction,
+        int minutesAgo,
+        BigDecimal targetPrice
+) {
 }

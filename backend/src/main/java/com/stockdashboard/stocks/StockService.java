@@ -3,6 +3,7 @@ package com.stockdashboard.stocks;
 import com.stockdashboard.common.ApiException;
 import com.stockdashboard.marketdata.Quote;
 import com.stockdashboard.marketdata.QuoteCacheService;
+import com.stockdashboard.suggestions.StockUniverse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -28,9 +29,11 @@ public class StockService {
         Map<String, Quote> quotes = quoteCacheService.getQuotes(List.of(ticker));
         Quote quote = quotes.get(ticker);
         boolean available = quote != null;
+        String name = available && quote.name() != null ? quote.name() : StockUniverse.COMPANY_NAMES.get(ticker);
 
         return new StockQuoteResponse(
                 ticker,
+                name,
                 available ? quote.price() : null,
                 available ? quote.changePercent() : null,
                 available ? quote.volume() : null,

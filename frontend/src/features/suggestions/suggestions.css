@@ -1,6 +1,5 @@
 .suggestion-block {
-  max-width: 780px;
-  margin-top: 2.75rem;
+  width: 100%;
 }
 
 .suggestion-header {
@@ -289,4 +288,23 @@
   width: 80px;
   text-align: right;
   flex-shrink: 0;
+}
+
+.signal-target {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.signal-target strong {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  color: var(--text);
+  font-weight: 700;
+}
+
+.signal-disclaimer {
+  color: var(--text-faint);
+  font-size: 0.75rem;
+  margin: 0.75rem 0 0;
 }

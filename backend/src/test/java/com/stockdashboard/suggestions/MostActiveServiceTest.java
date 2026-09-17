@@ -31,7 +31,7 @@ class MostActiveServiceTest {
     }
 
     private Quote quote(String ticker, long volume) {
-        return new Quote(ticker, BigDecimal.TEN, BigDecimal.ONE, volume, Instant.now());
+        return new Quote(ticker, BigDecimal.TEN, BigDecimal.ONE, volume, null, Instant.now());
     }
 
     @Test
@@ -51,7 +51,7 @@ class MostActiveServiceTest {
     void excludesTickersWithNoVolumeData() {
         when(quoteCacheService.getQuotes(any())).thenReturn(Map.of(
                 "GOOD", quote("GOOD", 1_000),
-                "NOVOL", new Quote("NOVOL", BigDecimal.TEN, BigDecimal.ONE, null, Instant.now())
+                "NOVOL", new Quote("NOVOL", BigDecimal.TEN, BigDecimal.ONE, null, null, Instant.now())
         ));
 
         List<MostActiveResponse> result = mostActiveService.getMostActive(10);

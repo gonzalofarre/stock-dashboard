@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -62,23 +63,43 @@ public class StrategyService {
             return List.of();
         }
         List<BigDecimal> closes = bars.stream().map(Bar::close).toList();
+        BigDecimal lastClose = closes.get(closes.size() - 1);
         List<StrategySignalResponse> result = new ArrayList<>();
 
         List<BigDecimal> emaFast = TechnicalIndicators.ema(closes, EMA_FAST);
         List<BigDecimal> emaSlow = TechnicalIndicators.ema(closes, EMA_SLOW);
         TechnicalIndicators.detectCrossover(emaFast, emaSlow, LOOKBACK_BARS)
-                .ifPresent(c -> result.add(toResponse(ticker, SignalType.EMA_CROSSOVER, c)));
+                .ifPresent(c -> result.add(toResponse(ticker, SignalType.EMA_CROSSOVER, c, emaFast, emaSlow, lastClose)));
 
         List<BigDecimal> macdLine = TechnicalIndicators.difference(
                 TechnicalIndicators.ema(closes, MACD_FAST), TechnicalIndicators.ema(closes, MACD_SLOW));
         List<BigDecimal> signalLine = TechnicalIndicators.ema(macdLine, MACD_SIGNAL);
         TechnicalIndicators.detectCrossover(macdLine, signalLine, LOOKBACK_BARS)
-                .ifPresent(c -> result.add(toResponse(ticker, SignalType.MACD_CROSSOVER, c)));
+                .ifPresent(c -> result.add(toResponse(ticker, SignalType.MACD_CROSSOVER, c, macdLine, signalLine, lastClose)));
 
         return result;
     }
 
-    private StrategySignalResponse toResponse(String ticker, SignalType type, TechnicalIndicators.Crossover crossover) {
-        return new StrategySignalResponse(ticker, type, crossover.direction(), crossover.barsAgo() * BAR_INTERVAL_MINUTES);
+    /**
+     * Target price: a simple momentum-projection heuristic, not investment
+     * advice — the last close plus the current gap between the two lines
+     * that produced this crossover (EMA9-EMA21 for an EMA signal, the MACD
+     * histogram for a MACD signal). It's a plain "project the current
+     * momentum forward by its own magnitude" number, reusing exactly the
+     * series already computed above; nothing more sophisticated than that.
+     */
+    private StrategySignalResponse toResponse(String ticker, SignalType type, TechnicalIndicators.Crossover crossover,
+            List<BigDecimal> fast, List<BigDecimal> slow, BigDecimal lastClose) {
+        int lastIndex = fast.size() - 1;
+        BigDecimal momentum = fast.get(lastIndex).subtract(slow.get(lastIndex));
+        BigDecimal targetPrice = lastClose.add(momentum).setScale(2, RoundingMode.HALF_UP);
+        return new StrategySignalResponse(
+                ticker,
+                StockUniverse.COMPANY_NAMES.get(ticker),
+                type,
+                crossover.direction(),
+                crossover.barsAgo() * BAR_INTERVAL_MINUTES,
+                targetPrice
+        );
     }
 }

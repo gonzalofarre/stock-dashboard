@@ -32,7 +32,7 @@ public class EarningsService {
                 .filter(e -> !e.reportDate().isBefore(today))
                 .sorted(Comparator.comparing(EarningsEvent::reportDate).thenComparing(EarningsEvent::ticker))
                 .limit(limit)
-                .map(e -> new UpcomingEarningsResponse(e.ticker(), e.reportDate(), e.time()))
+                .map(e -> new UpcomingEarningsResponse(e.ticker(), StockUniverse.COMPANY_NAMES.get(e.ticker()), e.reportDate(), e.time()))
                 .toList();
     }
 
@@ -46,7 +46,7 @@ public class EarningsService {
         return events.stream()
                 .filter(e -> e.epsActual() != null && e.epsEstimated() != null
                         && e.epsEstimated().compareTo(BigDecimal.ZERO) != 0)
-                .map(e -> new EarningsSurpriseResponse(e.ticker(), e.reportDate(), surprisePercent(e)))
+                .map(e -> new EarningsSurpriseResponse(e.ticker(), StockUniverse.COMPANY_NAMES.get(e.ticker()), e.reportDate(), surprisePercent(e)))
                 .sorted(Comparator.comparing(EarningsSurpriseResponse::surprisePercent).reversed())
                 .limit(limit)
                 .toList();

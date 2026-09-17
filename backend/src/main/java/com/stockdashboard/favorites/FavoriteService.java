@@ -3,6 +3,7 @@ package com.stockdashboard.favorites;
 import com.stockdashboard.common.ApiException;
 import com.stockdashboard.marketdata.Quote;
 import com.stockdashboard.marketdata.QuoteCacheService;
+import com.stockdashboard.suggestions.StockUniverse;
 import com.stockdashboard.user.User;
 import com.stockdashboard.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -34,8 +35,12 @@ public class FavoriteService {
                 .map(favorite -> {
                     Quote quote = quotes.get(favorite.getTicker());
                     boolean available = quote != null;
+                    String name = available && quote.name() != null
+                            ? quote.name()
+                            : StockUniverse.COMPANY_NAMES.get(favorite.getTicker());
                     return new FavoriteResponse(
                             favorite.getTicker(),
+                            name,
                             available ? quote.price() : null,
                             available ? quote.changePercent() : null,
                             available,

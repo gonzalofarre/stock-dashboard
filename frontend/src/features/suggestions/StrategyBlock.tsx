@@ -80,10 +80,13 @@ export function StrategyBlock() {
               <span className={`signal-icon ${s.direction === "BULLISH" ? "bullish" : "bearish"}`}>
                 <DirectionIcon direction={s.direction} />
               </span>
-              <Link to={`/stock/${s.ticker}`} className="signal-ticker">
+              <Link to={`/stock/${s.ticker}`} className="signal-ticker" title={s.companyName ?? undefined}>
                 {s.ticker}
               </Link>
               <span className="signal-label">{TYPE_LABEL[s.type]}</span>
+              <span className="signal-target">
+                Target <strong>${s.targetPrice.toFixed(2)}</strong>
+              </span>
               <span className={`signal-badge ${s.direction === "BULLISH" ? "bullish" : "bearish"}`}>
                 {s.direction === "BULLISH" ? "Alcista" : "Bajista"}
               </span>
@@ -91,6 +94,13 @@ export function StrategyBlock() {
             </div>
           ))}
         </div>
+      )}
+
+      {signals && signals.length > 0 && (
+        <p className="signal-disclaimer">
+          El target es una proyección técnica simple (precio actual + la distancia entre las dos líneas del cruce) —
+          no es una recomendación de inversión.
+        </p>
       )}
     </div>
   );

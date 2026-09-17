@@ -84,7 +84,7 @@ export function FavoritesList({ refreshSignal }: { refreshSignal?: number } = {}
         <ul className="favorites-list">
           {favorites.map((favorite) => (
             <li key={favorite.ticker} className="favorite-row">
-              <Link to={`/stock/${favorite.ticker}`} className="favorite-ticker">
+              <Link to={`/stock/${favorite.ticker}`} className="favorite-ticker" title={favorite.name ?? undefined}>
                 {favorite.ticker}
               </Link>
               {favorite.quoteAvailable ? (

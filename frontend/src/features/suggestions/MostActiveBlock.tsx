@@ -89,7 +89,7 @@ export function MostActiveBlock({ onFavoriteAdded }: { onFavoriteAdded?: () => v
             {stocks.map((stock) => (
               <tr key={stock.ticker}>
                 <td>
-                  <Link to={`/stock/${stock.ticker}`} className="suggestion-ticker">
+                  <Link to={`/stock/${stock.ticker}`} className="suggestion-ticker" title={stock.name ?? undefined}>
                     {stock.ticker}
                   </Link>
                 </td>
