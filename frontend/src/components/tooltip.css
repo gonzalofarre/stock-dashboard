@@ -1,4 +1,4 @@
-.ticker-tooltip {
+.hover-tooltip {
   position: fixed;
   transform: translateY(-100%);
   background: var(--surface-alt);

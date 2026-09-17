@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { TickerLink } from "../../components/TickerLink";
+import { Tooltip } from "../../components/Tooltip";
 import { strategyApi, type StrategySignal } from "./strategyApi";
 import type { Market } from "./market";
 import "./suggestions.css";
@@ -13,6 +14,14 @@ function formatMinutesAgo(minutes: number): string {
   if (minutes < 60) return `Hace ${minutes} min`;
   const hours = Math.round(minutes / 60);
   return `Hace ${hours} h`;
+}
+
+/** `fetchedAt` is when this signal list was actually fetched — not
+ * Date.now() at render time, which would drift later and later the longer
+ * the page sits open without a refetch. */
+function formatExactTime(fetchedAt: number, minutesAgo: number): string {
+  const detectedAt = new Date(fetchedAt - minutesAgo * 60_000);
+  return detectedAt.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" });
 }
 
 function DirectionIcon({ direction }: { direction: StrategySignal["direction"] }) {
@@ -40,6 +49,7 @@ function DirectionIcon({ direction }: { direction: StrategySignal["direction"] }
 export function StrategyBlock({ market }: { market: Market }) {
   const [limit, setLimit] = useState(10);
   const [signals, setSignals] = useState<StrategySignal[] | null>(null);
+  const [fetchedAt, setFetchedAt] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -47,7 +57,10 @@ export function StrategyBlock({ market }: { market: Market }) {
     setError(null);
     strategyApi
       .signals(limit, market)
-      .then(({ data }) => setSignals(data))
+      .then(({ data }) => {
+        setSignals(data);
+        setFetchedAt(Date.now());
+      })
       .catch(() => setError("No se pudo cargar la estrategia intradiaria."));
   }, [limit, market]);
 
@@ -93,7 +106,9 @@ export function StrategyBlock({ market }: { market: Market }) {
               <span className={`signal-badge ${s.direction === "BULLISH" ? "bullish" : "bearish"}`}>
                 {s.direction === "BULLISH" ? "Alcista" : "Bajista"}
               </span>
-              <span className="signal-when">{formatMinutesAgo(s.minutesAgo)}</span>
+              <Tooltip text={formatExactTime(fetchedAt, s.minutesAgo)}>
+                <span className="signal-when">{formatMinutesAgo(s.minutesAgo)}</span>
+              </Tooltip>
             </div>
           ))}
         </div>
