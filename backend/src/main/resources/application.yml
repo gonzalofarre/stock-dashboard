@@ -2,6 +2,11 @@ server:
   # Most PaaS providers (Railway included) assign the port dynamically and
   # inject it as PORT — 8080 is only the local-dev fallback.
   port: ${PORT:8080}
+  # Railway terminates TLS at its edge proxy and forwards plain HTTP to the
+  # container, so without this Spring builds redirect URIs (Google OAuth's
+  # among them) as http:// instead of https://, breaking anything relying
+  # on X-Forwarded-Proto — confirmed via the actual OAuth redirect_uri sent.
+  forward-headers-strategy: framework
 
 spring:
   application:
@@ -32,9 +37,13 @@ app:
   frontend:
     url: ${FRONTEND_URL:http://localhost:5183}
   email:
-    # "console" (default) logs the verification code instead of emailing it —
-    # switch to "smtp" once SMTP_* env vars above are set to a real provider.
+    # "console" (default) logs the verification code instead of emailing it.
+    # "smtp" needs SMTP_* env vars above, but most PaaS hosts (Railway
+    # included) block outbound SMTP ports, so it only really works locally.
+    # "resend" sends over Resend's HTTPS API instead — see ResendEmailService.
     mode: ${EMAIL_MODE:console}
+    resend:
+      api-key: ${RESEND_API_KEY:}
   jwt:
     # DEV-ONLY default so the app runs out of the box locally. This is a real
     # secret in any shared/production environment — always override via the
