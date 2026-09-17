@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { authApi, startGoogleLogin } from "./authApi";
 import { useGoogleLoginEnabled } from "./useGoogleLoginEnabled";
+import { GoogleIcon } from "./GoogleIcon";
 import "./auth.css";
 
 export function RegisterPage() {
@@ -72,6 +73,7 @@ export function RegisterPage() {
           <>
             <div className="auth-divider">o</div>
             <button className="auth-google-button" type="button" onClick={startGoogleLogin}>
+              <GoogleIcon />
               Continuar con Google
             </button>
           </>

@@ -4,6 +4,7 @@ import axios from "axios";
 import { useAuth } from "./AuthContext";
 import { startGoogleLogin } from "./authApi";
 import { useGoogleLoginEnabled } from "./useGoogleLoginEnabled";
+import { GoogleIcon } from "./GoogleIcon";
 import "./auth.css";
 
 export function LoginPage() {
@@ -62,6 +63,7 @@ export function LoginPage() {
           <>
             <div className="auth-divider">o</div>
             <button className="auth-google-button" type="button" onClick={startGoogleLogin}>
+              <GoogleIcon />
               Continuar con Google
             </button>
           </>
